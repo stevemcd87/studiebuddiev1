@@ -71,26 +71,9 @@ Amplify.configure({
 
 function App() {
   let [user, setUser] = useState(Auth);
+
   useEffect(() => {
     setUser(Auth);
-    API.get("StuddieBuddie", "/subjects", { response: true })
-      .then(response => {
-        console.log(response);
-      })
-      .catch(error => {
-        console.log(error.response);
-      });
-
-    // API.post("StuddieBuddie", "/subjects", {
-    //   body: JSON.stringify({ name: "math", category: "grade1" })
-    // })
-    //   .then(response => {
-    //     console.log(response);
-    //   })
-    //   .catch(error => {
-    //     console.log(error.response);
-    //   });
-    // Analytics.record("Amplify_CLI");
   }, []);
 
   useEffect(() => {

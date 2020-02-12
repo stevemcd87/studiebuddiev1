@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 
 function SubjectForm(props) {
-  let { API } = props,
+  let { API, getSubjects, setSubjects, setShowForm } = props,
     [name, setName] = useState(""),
     [category, setCategory] = useState("");
-  console.log(props);
   useEffect(() => {
     console.log(name + " - " + category);
   }, [category, name]);
@@ -34,6 +33,8 @@ function SubjectForm(props) {
     })
       .then(response => {
         console.log(response);
+        getSubjects(API, setSubjects);
+        setShowForm(false);
       })
       .catch(error => {
         console.log(error.response);
