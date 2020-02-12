@@ -1,0 +1,33 @@
+{
+    "dev": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-studiebuddie-dev-90203-authRole",
+            "UnauthRoleArn": "arn:aws:iam::901989215932:role/amplify-studiebuddie-dev-90203-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::901989215932:role/amplify-studiebuddie-dev-90203-authRole",
+            "Region": "us-east-1",
+            "DeploymentBucketName": "amplify-studiebuddie-dev-90203-deployment",
+            "UnauthRoleName": "amplify-studiebuddie-dev-90203-unauthRole",
+            "StackName": "amplify-studiebuddie-dev-90203",
+            "StackId": "arn:aws:cloudformation:us-east-1:901989215932:stack/amplify-studiebuddie-dev-90203/40d18340-4da0-11ea-b1b2-0a48dc861a07",
+            "AmplifyAppId": "d1oe6miz7ajpco"
+        },
+        "categories": {
+            "function": {
+                "studdiebuddieauthCustomMessage": {
+                    "REDIRECTURL": "http://localhost:3000/",
+                    "EMAILSUBJECT": "Account Confirmation",
+                    "EMAILMESSAGE": "Acount Confirmed"
+                },
+                "studdiebuddieauthPostConfirmation": {
+                    "GROUP": "User"
+                },
+                "studdiebuddieauthPreSignup": {}
+            },
+            "auth": {
+                "studdiebuddieauth": {
+                    "hostedUIProviderCreds": "[]"
+                }
+            }
+        }
+    }
+}

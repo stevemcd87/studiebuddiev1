@@ -1,0 +1,14 @@
+{
+    "trigger": true,
+    "modules": [
+        "custom"
+    ],
+    "parentResource": "studdiebuddieauth",
+    "functionName": "studdiebuddieauthPreSignup",
+    "parentStack": "auth",
+    "triggerEnvs": "[]",
+    "triggerTemplate": "PreSignup.json.ejs",
+    "roleName": "studdiebuddieauthPreSignup",
+    "skipEdit": true,
+    "resourceName": "studdiebuddieauthPreSignup"
+}

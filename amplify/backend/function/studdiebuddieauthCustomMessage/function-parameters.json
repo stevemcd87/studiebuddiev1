@@ -1,0 +1,14 @@
+{
+    "trigger": true,
+    "modules": [
+        "verification-link"
+    ],
+    "parentResource": "studdiebuddieauth",
+    "functionName": "studdiebuddieauthCustomMessage",
+    "parentStack": "auth",
+    "triggerEnvs": "[{\"key\":\"RESOURCENAME\",\"value\":\"resourceName\"}]",
+    "triggerTemplate": "CustomMessage.json.ejs",
+    "roleName": "studdiebuddieauthCustomMessage",
+    "skipEdit": true,
+    "resourceName": "studdiebuddieauthCustomMessage"
+}
