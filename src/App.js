@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
-import Amplify, { Auth } from "aws-amplify";
+
+import Subjects from "./components/Subjects/Subjects";
+
+import Amplify, { Auth, API } from "aws-amplify";
 import { Authenticator } from "aws-amplify-react";
 
 Amplify.configure({
@@ -55,6 +58,14 @@ Amplify.configure({
     //     redirectSignOut: 'http://localhost:3000/',
     //     responseType: 'code' // or 'token', note that REFRESH token will only be generated when the responseType is code
     // }
+  },
+  API: {
+    endpoints: [
+      {
+        name: "StuddieBuddie",
+        endpoint: "https://1dciz8ln4i.execute-api.us-east-1.amazonaws.com/dev"
+      }
+    ]
   }
 });
 
@@ -62,6 +73,23 @@ function App() {
   let [user, setUser] = useState(Auth);
   useEffect(() => {
     setUser(Auth);
+    API.get("StuddieBuddie", "/subjects", { response: true })
+      .then(response => {
+        console.log(response);
+      })
+      .catch(error => {
+        console.log(error.response);
+      });
+
+    // API.post("StuddieBuddie", "/subjects", {
+    //   body: JSON.stringify({ name: "math", category: "grade1" })
+    // })
+    //   .then(response => {
+    //     console.log(response);
+    //   })
+    //   .catch(error => {
+    //     console.log(error.response);
+    //   });
     // Analytics.record("Amplify_CLI");
   }, []);
 
@@ -70,15 +98,11 @@ function App() {
     // Analytics.record("Amplify_CLI");
   }, [user]);
   return (
-    <Authenticator>
-      <div className="App">
-        <header className="App-header">
-          <a href="https://studdiebuddie-dev.auth.us-east-1.amazoncognito.com/login?response_type=code&client_id=10n695p6519nsj34v27ngirf5h&redirect_uri=http://localhost:3000/">
-            SIgn In
-          </a>
-        </header>
-      </div>
-    </Authenticator>
+    <div className="App">
+      <Authenticator>
+        <Subjects {...{ API }} />
+      </Authenticator>
+    </div>
   );
 }
 // export default withAuthenticator(App, {
