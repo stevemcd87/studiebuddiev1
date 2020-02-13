@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 
 function SubjectForm(props) {
-  let { API, getSubjects, setSubjects, setShowForm } = props,
-    [name, setName] = useState(""),
-    [category, setCategory] = useState("");
+  let { API, getSubjects, setSubjects, setShowForm, subject } = props,
+    nameValue = subject ? subject.name : "",
+    categoryValue = subject ? subject.category : "",
+    [name, setName] = useState(nameValue),
+    [category, setCategory] = useState(categoryValue);
   useEffect(() => {
     console.log(name + " - " + category);
   }, [category, name]);
@@ -28,17 +30,36 @@ function SubjectForm(props) {
     </div>
   );
   function submitForm() {
-    API.post("StuddieBuddie", "/subjects", {
-      body: JSON.stringify({ name: name, category: category })
-    })
-      .then(response => {
-        console.log(response);
-        getSubjects(API, setSubjects);
-        setShowForm(false);
+    if (!subject) {
+      API.post("StuddieBuddie", "/subjects", {
+        body: JSON.stringify({ name: name, category: category })
       })
-      .catch(error => {
-        console.log(error.response);
-      });
+        .then(response => {
+          console.log(response);
+          getSubjects(API, setSubjects);
+          setShowForm(false);
+        })
+        .catch(error => {
+          console.log(error.response);
+        });
+    } else {
+      API.put("StuddieBuddie", "/subjects", {
+        body: JSON.stringify({
+          name: nameValue,
+          category: category,
+          newName: name,
+          newCategory: category
+        })
+      })
+        .then(response => {
+          console.log(response);
+          getSubjects(API, setSubjects);
+          setShowForm(false);
+        })
+        .catch(error => {
+          console.log(error.response);
+        });
+    }
   }
 }
 

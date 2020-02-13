@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import SubjectForm from "./SubjectForm";
+import Subject from "./Subject";
 function Subjects(props) {
   let { API } = props,
     [subjects, setSubjects] = useState([]),
     [showForm, setShowForm] = useState(false);
+
   console.log(props);
   useEffect(() => {
     getSubjects(API, setSubjects);
@@ -12,22 +14,15 @@ function Subjects(props) {
     <div>
       {subjects.map(s => {
         return (
-          <p key={s.name + "" + s.category}>
-            <span>
-              {s.name} - {s.category}
-            </span>
-            <button
-              type="button"
-              onClick={() =>
-                deleteSubject(API, setSubjects, {
-                  name: s.name,
-                  category: s.category
-                })
-              }
-            >
-              Delete
-            </button>
-          </p>
+          <Subject
+            {...{
+              key: s.name + s.category,
+              subject: s,
+              API,
+              getSubjects,
+              setSubjects
+            }}
+          />
         );
       })}
       <button type="button" onClick={() => setShowForm(!showForm)}>
@@ -45,21 +40,6 @@ function getSubjects(API, setSubjects) {
     .then(response => {
       console.log(response);
       setSubjects(response.data);
-    })
-    .catch(error => {
-      console.log(error.response);
-    });
-}
-
-function deleteSubject(API, setSubjects, subjectKey) {
-  let { name, category } = subjectKey;
-  console.log("get");
-  API.del("StuddieBuddie", "/subjects", {
-    body: JSON.stringify({ name: name, category: category })
-  })
-    .then(response => {
-      console.log(response);
-      getSubjects(API, setSubjects);
     })
     .catch(error => {
       console.log(error.response);
