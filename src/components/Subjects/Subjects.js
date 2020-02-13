@@ -13,7 +13,20 @@ function Subjects(props) {
       {subjects.map(s => {
         return (
           <p key={s.name + "" + s.category}>
-            {s.name} - {s.category}
+            <span>
+              {s.name} - {s.category}
+            </span>
+            <button
+              type="button"
+              onClick={() =>
+                deleteSubject(API, setSubjects, {
+                  name: s.name,
+                  category: s.category
+                })
+              }
+            >
+              Delete
+            </button>
           </p>
         );
       })}
@@ -32,6 +45,21 @@ function getSubjects(API, setSubjects) {
     .then(response => {
       console.log(response);
       setSubjects(response.data);
+    })
+    .catch(error => {
+      console.log(error.response);
+    });
+}
+
+function deleteSubject(API, setSubjects, subjectKey) {
+  let { name, category } = subjectKey;
+  console.log("get");
+  API.del("StuddieBuddie", "/subjects", {
+    body: JSON.stringify({ name: name, category: category })
+  })
+    .then(response => {
+      console.log(response);
+      getSubjects(API, setSubjects);
     })
     .catch(error => {
       console.log(error.response);
