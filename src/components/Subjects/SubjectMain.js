@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import Subjects from "./SubjectList/Subjects";
 import SubjectCategory from "./SubjectCategory/SubjectCategory";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 function SubjectMain() {
   useEffect(() => {
@@ -16,7 +16,7 @@ function SubjectMain() {
           <Route exact path="/">
             <Subjects />
           </Route>
-          <Route path="/subjects/:subjectName/:subjectCategory">
+          <Route path="/subjects/:name/:category">
             <SubjectCategory />
           </Route>
         </Switch>

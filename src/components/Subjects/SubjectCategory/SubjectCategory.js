@@ -1,18 +1,46 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+
+import { useParams } from "react-router-dom";
+
 import ApiContext from "../../../contexts/ApiContext";
+import NoteForm from "./NoteForm";
 
 function SubjectCategory() {
+  let { name, category } = useParams(),
+    [subjectCategory, setSubjectCategory] = useState({}),
+    [displayNoteForm, setDisplayNoteForm] = useState(false),
+    { API } = useContext(ApiContext);
+  useEffect(() => {
+    console.log("API, category, name");
+
+    // console.log(name + "/" + category);
+    getSubjectCategory(API, setSubjectCategory, name, category);
+  }, [API, category, name]);
+
   useEffect(() => {
     console.log("subjectCategory");
-  }, []);
-  return <p>SubjectCategory</p>;
+    console.log(subjectCategory);
+  }, [subjectCategory]);
+  return (
+    <div>
+      <button
+        type="button "
+        onClick={() => setDisplayNoteForm(!displayNoteForm)}
+      >
+        Create Note
+      </button>
+      {displayNoteForm && <NoteForm />}
+      <p>SubjectCategory</p>
+    </div>
+  );
 }
-function getSubjectCategory(API, name, category) {
-  console.log("getSubjectCategory");
+function getSubjectCategory(API, setSubjectCategory, name, category) {
+  console.log("GET Subjectcategory");
   API.get("StuddieBuddie", `/subjects/${name}/${category}`, { response: true })
     .then(response => {
+      console.log("GET SubjectCategory response");
       console.log(response);
-      // setSubjects(response.data);
+      setSubjectCategory(response.data.data.Item);
     })
     .catch(error => {
       console.log(error.response);
