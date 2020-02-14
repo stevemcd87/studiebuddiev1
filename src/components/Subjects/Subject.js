@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import SubjectForm from "./SubjectForm";
 function Subject(props) {
   let { subject, getSubjects, setSubjects, API } = props,
@@ -7,8 +8,14 @@ function Subject(props) {
     <div>
       <p>
         <span>
-          <span>
-            {subject.name} - {subject.category}
+          <span
+            onClick={() =>
+              getSubjectCategory(API, subject.name, subject.category)
+            }
+          >
+            <Link to={`subjects/${subject.name}/${subject.category}`}>
+              {subject.name} - {subject.category}{" "}
+            </Link>
           </span>
           <button
             type="button"
@@ -53,6 +60,17 @@ function deleteSubject(API, getSubjects, setSubjects, subjectKey) {
     .then(response => {
       console.log(response);
       getSubjects(API, setSubjects);
+    })
+    .catch(error => {
+      console.log(error.response);
+    });
+}
+
+function getSubjectCategory(API, name, category) {
+  API.get("StuddieBuddie", `/subjects/${name}/${category}`, { response: true })
+    .then(response => {
+      console.log(response);
+      // setSubjects(response.data);
     })
     .catch(error => {
       console.log(error.response);
