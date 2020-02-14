@@ -1,28 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import { Link } from "react-router-dom";
+
+import ApiContext from "../../../contexts/ApiContext";
 import SubjectForm from "./SubjectForm";
 function Subject(props) {
-  let { subject, getSubjects, setSubjects, API } = props,
+  let { API } = useContext(ApiContext),
+    { subject, getSubjects, setSubjects } = props,
     [showUpdateForm, setShowUpdateForm] = useState(false);
+
   return (
     <div>
       <p>
         <span>
-          <span
-            onClick={() =>
-              getSubjectCategory(API, subject.name, subject.category)
-            }
-          >
-            <Link to={`subjects/${subject.name}/${subject.category}`}>
-              {subject.name} - {subject.category}{" "}
-            </Link>
-          </span>
-          <button
-            type="button"
-            onClick={() => setShowUpdateForm(!showUpdateForm)}
-          >
-            Update
-          </button>
+          <Link to={`subjects/${subject.name}/${subject.category}`}>
+            {subject.name} - {subject.category}{" "}
+          </Link>
         </span>
         <button
           type="button"
@@ -53,7 +45,7 @@ function Subject(props) {
 
 function deleteSubject(API, getSubjects, setSubjects, subjectKey) {
   let { name, category } = subjectKey;
-  console.log("get");
+  console.log("deleteSubject");
   API.del("StuddieBuddie", "/subjects", {
     body: JSON.stringify({ name: name, category: category })
   })
@@ -66,14 +58,4 @@ function deleteSubject(API, getSubjects, setSubjects, subjectKey) {
     });
 }
 
-function getSubjectCategory(API, name, category) {
-  API.get("StuddieBuddie", `/subjects/${name}/${category}`, { response: true })
-    .then(response => {
-      console.log(response);
-      // setSubjects(response.data);
-    })
-    .catch(error => {
-      console.log(error.response);
-    });
-}
 export default Subject;

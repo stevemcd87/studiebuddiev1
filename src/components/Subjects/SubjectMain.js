@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import Subjects from "./Subjects";
+import Subjects from "./SubjectList/Subjects";
 import SubjectCategory from "./SubjectCategory/SubjectCategory";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 

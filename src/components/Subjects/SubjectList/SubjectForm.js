@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import ApiContext from "../../../contexts/ApiContext";
 
 function SubjectForm(props) {
-  let { API, getSubjects, setSubjects, setShowForm, subject } = props,
+  let { API } = useContext(ApiContext),
+    { getSubjects, setSubjects, setShowForm, subject } = props,
     nameValue = subject ? subject.name : "",
     categoryValue = subject ? subject.category : "",
     [name, setName] = useState(nameValue),

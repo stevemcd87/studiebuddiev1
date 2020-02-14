@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import SubjectForm from "./SubjectForm";
 import Subject from "./Subject";
-import ApiContext from "../../contexts/ApiContext";
+import ApiContext from "../../../contexts/ApiContext";
 
 function Subjects(props) {
   let { API } = useContext(ApiContext),
@@ -20,7 +20,6 @@ function Subjects(props) {
             {...{
               key: s.name + s.category,
               subject: s,
-              API,
               getSubjects,
               setSubjects
             }}
@@ -31,7 +30,7 @@ function Subjects(props) {
         {showForm ? "Hide Form" : "Create Subject"}
       </button>
       {showForm && (
-        <SubjectForm {...{ API, getSubjects, setSubjects, setShowForm }} />
+        <SubjectForm {...{ getSubjects, setSubjects, setShowForm }} />
       )}
     </div>
   );
