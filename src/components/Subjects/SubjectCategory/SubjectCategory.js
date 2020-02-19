@@ -29,7 +29,7 @@ function SubjectCategory() {
       >
         Create Note
       </button>
-      {displayNoteForm && <NoteForm />}
+      {displayNoteForm && <NoteForm {...{ subjectCategory }} />}
       <p>SubjectCategory</p>
     </div>
   );
