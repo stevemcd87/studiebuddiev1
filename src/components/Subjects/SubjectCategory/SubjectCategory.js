@@ -38,17 +38,21 @@ function SubjectCategory() {
   }, [subjectCategoryNotes]);
   return (
     <div>
-      {subjectCategoryNotes &&
-        subjectCategoryNotes.map((note, ind) => {
-          return (
-            <div key={note.title + ind}>
-              <p>{note.title}</p>
-              {note.notes.map((n, i) => (
-                <p key={n + i}>{n}</p>
-              ))}
-            </div>
-          );
-        })}
+      {subjectCategoryNotes && (
+        <div className="notes">
+          {subjectCategoryNotes.map((note, ind) => {
+            return (
+              <div key={note.title + ind} className="note">
+                <span className="delete-note">x</span>
+                <p>{note.title}</p>
+                {note.notes.map((n, i) => (
+                  <p key={n + i}>{n}</p>
+                ))}
+              </div>
+            );
+          })}
+        </div>
+      )}
       <button
         type="button "
         onClick={() => setDisplayNoteForm(!displayNoteForm)}
