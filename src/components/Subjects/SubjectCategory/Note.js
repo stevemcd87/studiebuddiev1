@@ -1,4 +1,4 @@
-import React,{useState, useContext} from "react";
+import React,{useState, useEffect, useContext} from "react";
 import NoteForm from "./NoteForm";
 import { useParams } from "react-router-dom";
 import ApiContext from "../../../contexts/ApiContext";
@@ -7,6 +7,10 @@ function Note(props) {
     [displayEdit, setDisplayEdit] = useState(false),
     { name, category } = useParams(),
     { API } = useContext(ApiContext);
+
+    useEffect(()=>{
+      setDisplayEdit(false)
+    },[subjectCategoryNotes])
   return (
     <div className="note">
       <span className="delete-note" onClick={() => deleteNote(noteIndex)}>
@@ -14,13 +18,13 @@ function Note(props) {
       </span>
       {displayEdit && (
         <NoteForm
-          {...{ note, subjectCategoryNotes, setSubjectCategoryNotes }}
+          {...{ note, subjectCategoryNotes, setSubjectCategoryNotes, noteIndex }}
         />
       )}
       {!displayEdit && (
         <div className="note-detail">
           <p>{note.title}</p>
-          {note.notes.map((n, i) => (
+          {note.notes && note.notes.map((n, i) => (
             <p key={n + i}>{n}</p>
           ))}
           <span

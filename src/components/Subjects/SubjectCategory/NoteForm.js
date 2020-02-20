@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
+import { useParams } from "react-router-dom";
 import "./NoteForm.css";
 import ApiContext from "../../../contexts/ApiContext";
 function NoteForm(props) {
-  let { subjectCategory, setSubjectCategoryNotes, note } = props,
+  let { subjectCategoryNotes, setSubjectCategoryNotes, note, noteIndex } = props,
+  { name, category } = useParams(),
     [title, setTitle] = useState(note ? note.title : ""),
     // NoteInput Component list
     [notes, setNotes] = useState([]),
@@ -10,12 +12,13 @@ function NoteForm(props) {
     { API } = useContext(ApiContext);
 
   useEffect(() => {
-    if (note) displayNotes(note.notes);
-  }, []);
+    if (note) displayNotes(note.notes, setNotes);
+  }, [note]);
 
   useEffect(() => {
     // console.log("subjectCategoryNotes");
     // console.log(subjectCategoryNotes);
+    console.log(noteIndex);
   }, []);
   return (
     <div className="note-form">
@@ -33,15 +36,41 @@ function NoteForm(props) {
       <button type="button" onClick={addNoteInput}>
         Add Note
       </button>
-      <button type="submit" onClick={postNote}>
+      {!note && <button type="submit" onClick={postNote}>
         Create Note
-      </button>
+      </button>}
+      {note && <button type="submit" onClick={postNote}>
+        Update Note
+      </button>}
     </div>
   );
 
-  function displayNotes(notesArray) {
-    setNotes(notesArray.map((n, i) => <NoteInput key={i} note={n} />));
+  function updateNote(n) {
+    console.log('het');
+    console.log(n);
+    API.put(
+      "StuddieBuddie",
+      `/subjects/${name}/${category}/notes/${noteIndex}`,
+      {
+        body: JSON.stringify(n)
+      }
+    )
+      .then(response => {
+        let em = JSON.parse(response.errorMessage);
+        console.log("notes");
+        console.log(em);
+        let scn = subjectCategoryNotes.slice();
+        scn[noteIndex] = em.data.Attributes.notes[0];
+        setSubjectCategoryNotes(scn);
+        console.log("response");
+        console.log(response);
+      })
+      .catch(error => {
+        console.log("ERROR");
+        console.log(error);
+      });
   }
+
   function addNoteInput() {
     // Assigns a 'key' value for Component
     let key = notes[0] ? notes[notes.length - 1].key + 1 : 0;
@@ -50,25 +79,26 @@ function NoteForm(props) {
 
   function postNote() {
     console.log("postNote");
-    let note = {
+    let noteValues = {
       title,
       notes: []
     };
 
     [...noteArray.current.querySelectorAll(".note")].forEach(noteElement => {
-      note.notes.push(noteElement.value);
+      noteValues.notes.push(noteElement.value);
     });
     console.log(note);
-    submitForm(note);
+    !note ? submitForm(noteValues) : updateNote(noteValues)
+    ;
   }
 
-  function submitForm(note) {
+  function submitForm(n) {
     // if (!subject) {
     API.post(
       "StuddieBuddie",
-      `/subjects/${subjectCategory.name}/${subjectCategory.category}`,
+      `/subjects/${name}/${category}`,
       {
-        body: JSON.stringify(note)
+        body: JSON.stringify(n)
       }
     )
       .then(response => {
@@ -104,6 +134,9 @@ function NoteForm(props) {
   }
 } // End of component
 
+function displayNotes(notesArray, setNotes) {
+  setNotes(notesArray.map((n, i) => <NoteInput key={i} note={n} />));
+}
 function NoteInput(props) {
   let { note } = props;
   return (
