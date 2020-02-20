@@ -43,7 +43,9 @@ function SubjectCategory() {
           {subjectCategoryNotes.map((note, ind) => {
             return (
               <div key={note.title + ind} className="note">
-                <span className="delete-note">x</span>
+                <span className="delete-note" onClick={() => deleteNote(ind)}>
+                  x
+                </span>
                 <p>{note.title}</p>
                 {note.notes.map((n, i) => (
                   <p key={n + i}>{n}</p>
@@ -65,7 +67,23 @@ function SubjectCategory() {
       <p>SubjectCategory</p>
     </div>
   );
+  function deleteNote(index) {
+    console.log("deleteNote");
+    API.del("StuddieBuddie", `/subjects/${name}/${category}/notes/${index}`, {})
+      .then(response => {
+        console.log("response");
+        console.log(JSON.parse(response.errorMessage));
+        setSubjectCategoryNotes(
+          JSON.parse(response.errorMessage).data.Attributes.notes
+        );
+      })
+      .catch(error => {
+        console.log("error");
+        console.log(error.response);
+      });
+  }
 }
+
 function getSubjectCategory(API, setSubjectCategory, name, category) {
   console.log("GET Subjectcategory");
   API.get("StuddieBuddie", `/subjects/${name}/${category}`, { response: true })
