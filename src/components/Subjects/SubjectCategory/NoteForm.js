@@ -2,9 +2,8 @@ import React, { useState, useEffect, useContext, useRef } from "react";
 import "./NoteForm.css";
 import ApiContext from "../../../contexts/ApiContext";
 function NoteForm(props) {
-  let { subjectCategory } = props,
+  let { subjectCategory, setSubjectCategoryNotes } = props,
     [title, setTitle] = useState(""),
-    [subjectCategoryNotes, setSubjectCategoryNotes] = useState([]),
     // NoteInput Component list
     [notes, setNotes] = useState([]),
     noteArray = useRef(null),
@@ -17,9 +16,9 @@ function NoteForm(props) {
   }, [notes]);
 
   useEffect(() => {
-    console.log("subjectCategoryNotes");
-    console.log(subjectCategoryNotes);
-  }, [subjectCategoryNotes]);
+    // console.log("subjectCategoryNotes");
+    // console.log(subjectCategoryNotes);
+  }, []);
   return (
     <div className="note-form">
       <input
@@ -30,7 +29,7 @@ function NoteForm(props) {
         placeholder="Title (Optional)"
       />
       <div className="note-array" ref={noteArray}>
-        {notes.map(v => v)}
+        {notes.map(noteInputComponent => noteInputComponent)}
       </div>
 
       <button type="button" onClick={addNoteInput}>
