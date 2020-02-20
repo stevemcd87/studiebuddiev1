@@ -2,18 +2,16 @@ import React, { useState, useEffect, useContext, useRef } from "react";
 import "./NoteForm.css";
 import ApiContext from "../../../contexts/ApiContext";
 function NoteForm(props) {
-  let { subjectCategory, setSubjectCategoryNotes } = props,
-    [title, setTitle] = useState(""),
+  let { subjectCategory, setSubjectCategoryNotes, note } = props,
+    [title, setTitle] = useState(note ? note.title : ""),
     // NoteInput Component list
     [notes, setNotes] = useState([]),
     noteArray = useRef(null),
     { API } = useContext(ApiContext);
 
   useEffect(() => {
-    console.log("note inputs");
-    console.log(notes);
-    console.log([...noteArray.current.querySelectorAll(".note")]);
-  }, [notes]);
+    if (note) displayNotes(note.notes);
+  }, []);
 
   useEffect(() => {
     // console.log("subjectCategoryNotes");
@@ -40,6 +38,10 @@ function NoteForm(props) {
       </button>
     </div>
   );
+
+  function displayNotes(notesArray) {
+    setNotes(notesArray.map((n, i) => <NoteInput key={i} note={n} />));
+  }
   function addNoteInput() {
     // Assigns a 'key' value for Component
     let key = notes[0] ? notes[notes.length - 1].key + 1 : 0;
@@ -102,10 +104,11 @@ function NoteForm(props) {
   }
 } // End of component
 
-function NoteInput() {
+function NoteInput(props) {
+  let { note } = props;
   return (
     <div>
-      <textarea className="note" />
+      <textarea className="note" defaultValue={note ? note : ""} />
     </div>
   );
 }
