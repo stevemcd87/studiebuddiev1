@@ -1,6 +1,6 @@
 {
     "identityPoolName": "studdiebuddieidpool",
-    "allowUnauthenticatedIdentities": false,
+    "allowUnauthenticatedIdentities": true,
     "resourceNameTruncated": "studdib09ab861",
     "userPoolName": "studdiebuddieuserpool",
     "autoVerifiedAttributes": [

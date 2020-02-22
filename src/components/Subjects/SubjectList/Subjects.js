@@ -43,7 +43,7 @@ function getSubjects(API, setSubjects) {
       setSubjects(response.data);
     })
     .catch(error => {
-      console.log(error.response);
+      console.log(error);
     });
 }
 

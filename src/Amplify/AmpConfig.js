@@ -1,4 +1,19 @@
 const AmpConfig = {
+  Interactions: {
+    bots: {
+      PizzaOrderingBot: {
+        name: "PizzaOrderingBot",
+        alias: "ALIAS",
+        region: "us-east-1"
+      }
+    }
+  },
+  Storage: {
+    AWSS3: {
+      bucket: "studdiebuddie", //REQUIRED -  Amazon S3 bucket
+      region: "us-east-1" //OPTIONAL -  Amazon service region
+    }
+  },
   Auth: {
     // REQUIRED only for Federated Authentication - Amazon Cognito Identity Pool ID
     identityPoolId: "us-east-1:4556e5cb-9bfc-47e3-bca1-fdb0e3b61bfb",
