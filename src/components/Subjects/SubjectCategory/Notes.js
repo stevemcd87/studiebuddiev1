@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext } from "react";
-
+import React  from "react";
+//  { useState, useEffect, useContext }
 import Note from "./Note";
 
 function Notes(props) {

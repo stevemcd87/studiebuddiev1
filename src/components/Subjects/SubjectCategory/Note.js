@@ -11,8 +11,24 @@ function Note(props) {
     useEffect(()=>{
       setDisplayEdit(false)
     },[subjectCategoryNotes])
+
+    function uploadFile(evt) {
+      console.log("u");
+      let file = evt.target.files[0],
+        name = file.name;
+      Storage.put(name, file)
+        .then(res => console.log(res))
+        .catch(err => {
+          console.log(err);
+        });
+    }
+
   return (
     <div className="note">
+    <div className="test">
+      <p> Pick a file(AUDIO)</p>
+      <input type="file" onChange={uploadFile} />
+    </div>
       <span className="delete-note" onClick={() => deleteNote(noteIndex)}>
         X
       </span>
@@ -50,10 +66,6 @@ function Note(props) {
         console.log("error");
         console.log(error.response);
       });
-  }
-
-  function editNote() {
-    console.log("edit note");
   }
 }
 

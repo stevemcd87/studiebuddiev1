@@ -36,7 +36,7 @@ function Subjects(props) {
   );
 }
 function getSubjects(API, setSubjects) {
-  console.log("get");
+  console.log("GET subjects");
   API.get("StuddieBuddie", "/subjects", { response: true })
     .then(response => {
       console.log(response);
