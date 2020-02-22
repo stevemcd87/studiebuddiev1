@@ -58,7 +58,7 @@ function getSubjectCategory(API, setSubjectCategory, name, category) {
       setSubjectCategory(response.data.data.Item);
     })
     .catch(error => {
-      console.log(error.response);
+      console.log(error);
     });
 }
 
