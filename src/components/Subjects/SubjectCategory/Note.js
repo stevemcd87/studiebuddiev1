@@ -10,9 +10,11 @@ function Note(props) {
       noteIndex
     } = props,
     [mediaRecorder, setMediaRecorder] = useState(),
+    [audioBlob, setAudioBlob] = useState(),
+    [audio, setAudio] = useState(),
     [displayEdit, setDisplayEdit] = useState(false),
     { name, category } = useParams(),
-    { API } = useContext(ApiContext);
+    { API, Storage } = useContext(ApiContext);
 
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
@@ -23,6 +25,7 @@ function Note(props) {
       console.log(mr);
       setMediaRecorder(mr);
       console.log();
+
       return function cleanup() {
         mediaRecorder.removeEventListener("dataavailable", () => {});
         mediaRecorder.removeEventListener("stop", () => {});
@@ -34,40 +37,76 @@ function Note(props) {
     setDisplayEdit(false);
   }, [subjectCategoryNotes]);
 
+  useEffect(() => {
+    if (audioBlob) {
+      console.log(URL);
+      const audioUrl = URL.createObjectURL(audioBlob);
+      setAudio(new Audio(audioUrl));
+    }
+
+  }, [audioBlob]);
+
+
+
+  useEffect(() => {
+    console.log(mediaRecorder);
+  }, [mediaRecorder]);
+
   function startRecord() {
     mediaRecorder.start();
-    const audioChunks = [];
+    let audioChunks = [];
     mediaRecorder.addEventListener("dataavailable", event => {
+      console.log(event);
       audioChunks.push(event.data);
     });
 
     mediaRecorder.addEventListener("stop", () => {
-      const audioBlob = new Blob(audioChunks);
-      const audioUrl = URL.createObjectURL(audioBlob);
-      const audio = new Audio(audioUrl);
-      audio.play();
+      setAudioBlob(new Blob(audioChunks));
     });
+  }
+
+  function playAudio() {
+    audio.play();
   }
 
   function uploadFile(evt) {
     console.log("u");
-    let file = evt.target.files[0],
-      name = file.name;
-    Storage.put(name, file)
+    // let file = evt.target.files[0],
+    //   name = file.name;
+    Storage.put("name.data", audioBlob)
       .then(res => console.log(res))
       .catch(err => {
         console.log(err);
       });
   }
 
+function getData(){
+  Storage.get("name.data")
+    .then(res =>{ console.log('res'); console.log(res);
+    // setAudioBlob(res);
+    new Audio(res).play()
+    })
+    .catch(err => {
+      console.log(err);
+    });
+}
+
+
+
+
+  // <div className="test">
+  //   <p> Pick a file(AUDIO)</p>
+  //   <input type="file" onChange={uploadFile} />
+  // </div>
+
   return (
     <div className="note">
+    <button onClick={getData}>get</button>
       <button onClick={startRecord}>start</button>
       <button onClick={() => mediaRecorder.stop()}>stop</button>
-      <div className="test">
-        <p> Pick a file(AUDIO)</p>
-        <input type="file" onChange={uploadFile} />
-      </div>
+      {audio && <button onClick={playAudio}>Play</button>}
+      <button onClick={uploadFile}> Save</button>
+
       <span className="delete-note" onClick={() => deleteNote(noteIndex)}>
         X
       </span>
