@@ -26,3 +26,7 @@
 .note .edit-note {
   color: blue;
 }
+
+.audio-note {
+  padding: 1em;
+}

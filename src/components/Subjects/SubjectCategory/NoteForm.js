@@ -9,16 +9,62 @@ function NoteForm(props) {
       note,
       noteIndex
     } = props,
+    [mediaRecorder, setMediaRecorder] = useState(),
+    [audioBlob, setAudioBlob] = useState(),
+    [audio, setAudio] = useState(),
+    [recording, setRecording] = useState(false),
     { name, category } = useParams(),
     [title, setTitle] = useState(note ? note.title : ""),
     // NoteInput Component list
     [notes, setNotes] = useState([]),
     noteArray = useRef(null),
-    { API } = useContext(ApiContext);
+    { API , Storage} = useContext(ApiContext);
+
+  useEffect(() => {
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+      console.log("stream");
+      console.log(stream);
+      const mr = new MediaRecorder(stream);
+      console.log("mediaRecorder");
+      console.log(mr);
+      setMediaRecorder(mr);
+      console.log("note");
+      console.log(note);
+
+      return function cleanup() {
+        mediaRecorder.removeEventListener("dataavailable", () => {});
+        mediaRecorder.removeEventListener("stop", () => {});
+        // ChatAPI.unsubscribeFromFriendStatus(props.friend.id, handleStatusChange);
+      };
+    });
+  }, []);
+  useEffect(() => {
+    if (audioBlob) {
+      console.log(URL);
+      const audioUrl = URL.createObjectURL(audioBlob);
+      setAudio(new Audio(audioUrl));
+    }
+  }, [audioBlob]);
 
   useEffect(() => {
     if (note) displayNotes(note.notes, setNotes);
   }, [note]);
+
+  useEffect(() => {
+    if (recording) {
+      mediaRecorder.start();
+      let audioChunks = [];
+      mediaRecorder.addEventListener("dataavailable", event => {
+        console.log(event);
+        audioChunks.push(event.data);
+      });
+
+      mediaRecorder.addEventListener("stop", () => {
+        setAudioBlob(new Blob(audioChunks));
+      });
+      console.log("recording");
+    }
+  }, [ recording]);
 
   useEffect(() => {
     // console.log("subjectCategoryNotes");
@@ -26,8 +72,57 @@ function NoteForm(props) {
     console.log(noteIndex);
   }, [noteIndex]);
 
+  function startRecord() {
+    setRecording(true);
+    // mediaRecorder.start();
+    // let audioChunks = [];
+    // mediaRecorder.addEventListener("dataavailable", event => {
+    //   console.log(event);
+    //   audioChunks.push(event.data);
+    // });
+    //
+    // mediaRecorder.addEventListener("stop", () => {
+    //   setAudioBlob(new Blob(audioChunks));
+    // });
+  }
+
+  function playAudio() {
+    audio.play();
+  }
+
+  function uploadFile(evt) {
+    console.log("u");
+    // let file = evt.target.files[0],
+    //   name = file.name;
+    Storage.put(`${name}/${category}/${note.id}/noteIndex`, audioBlob)
+      .then(res => console.log(res))
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
+  function getData() {
+    Storage.get(note.audioNoteKey)
+      .then(res => {
+        console.log("res");
+        console.log(res);
+        // setAudioBlob(res);
+        new Audio(res).play();
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
   return (
     <div className="note-form">
+      <div className="audio-note">
+        {note && note.audioNoteKey && <button onClick={getData}>Play Audio Note</button>}
+        <button onClick={startRecord}>{recording ? 'Recording..' :'start recording'}</button>
+        <button onClick={() => {mediaRecorder.stop(); setRecording(false)}}>stop</button>
+        <button onClick={uploadFile}> Save</button>
+        {audio && <button onClick={playAudio}>Play Audio Note</button>}
+      </div>
       <input
         className="note-title"
         type="text"
@@ -66,14 +161,25 @@ function NoteForm(props) {
       }
     )
       .then(response => {
-        let em = JSON.parse(response.errorMessage);
-        console.log("notes");
+        console.log("em");
         console.log(em);
-        let scn = subjectCategoryNotes.slice();
-        scn[noteIndex] = em.data.Attributes.notes[0];
-        setSubjectCategoryNotes(scn);
-        console.log("response");
-        console.log(response);
+        let em = JSON.parse(response.errorMessage),
+         scn = subjectCategoryNotes.slice();
+        // scn[noteIndex] = em.data.Attributes.notes[0];
+        if (audioBlob){
+          Storage.put(`${name}/${category}/${note.id}`, audioBlob)
+            .then(res => {
+              console.log(res);
+              console.log('storage PUT  complete');
+              setSubjectCategoryNotes(scn);})
+            .catch(err => {
+              console.log(err);
+            });
+        } else {
+          setSubjectCategoryNotes(scn);
+        }
+
+
       })
       .catch(error => {
         console.log("ERROR");
@@ -89,9 +195,10 @@ function NoteForm(props) {
 
   function postNote() {
     console.log("postNote");
-    let noteValues = {
+      let noteValues = {
       title,
-      notes: []
+      notes: [],
+
     };
 
     [...noteArray.current.querySelectorAll(".note")].forEach(noteElement => {
@@ -106,16 +213,36 @@ function NoteForm(props) {
       body: JSON.stringify(n)
     })
       .then(response => {
-        let em = JSON.parse(response.errorMessage);
-        console.log("parse error");
-        console.log(em.data.Attributes.notes);
-        setSubjectCategoryNotes(em.data.Attributes.notes);
-        console.log("response");
+        console.log('posting note');
         console.log(response);
+        let em = JSON.parse(response.errorMessage),
+          id = em.data.Attributes.notes[notes.length].id;
+          // console.log("parse error");
+          // console.log(em.data.Attributes.notes);
+          // setSubjectCategoryNotes();
+          // console.log("response");
+          // console.log(response);
+        console.log(em);
+        setTimeout(function () {
+          if (audioBlob){
+            Storage.put(`${name}/${category}/${em.data.Attributes.notes.length - 1}/${id}`, audioBlob)
+              .then(res => {
+                console.log(res);
+                console.log('storage PUT  complete');
+                setSubjectCategoryNotes(em.data.Attributes.notes);
+              })
+              .catch(err => {
+                console.log(err);
+              });
+          }
+}, 5000);
+
+
+
       })
       .catch(error => {
         console.log("ERROR");
-        console.log(JSON.parse(error));
+        console.log(error);
       });
   }
 } // End of component

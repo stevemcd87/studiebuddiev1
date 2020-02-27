@@ -2,7 +2,8 @@ import React from "react";
 
 const ApiContext = React.createContext({
   API: {},
-  Storage: {}
+  Storage: {},
+  user: {}
   // addToApi: () => {},
   // removeFromApi: () => {},
   // clearApi: () => {},

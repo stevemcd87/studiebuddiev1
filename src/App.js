@@ -27,7 +27,7 @@ function App() {
   return (
     <div className="App">
       <Authenticator>
-        <ApiContext.Provider value={{ API, Storage }}>
+        <ApiContext.Provider value={{ API, Storage, user }}>
           <SubjectMain />
         </ApiContext.Provider>
       </Authenticator>

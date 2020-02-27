@@ -47,7 +47,10 @@ function deleteSubject(API, getSubjects, setSubjects, subjectKey) {
   let { name, category } = subjectKey;
   console.log("deleteSubject");
   API.del("StuddieBuddie", "/subjects", {
-    body: JSON.stringify({ name: name, category: category })
+    body: JSON.stringify({
+      name: name,
+      category: category
+    })
   })
     .then(response => {
       console.log(response);
