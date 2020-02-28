@@ -59,8 +59,7 @@ function SubjectForm(props) {
         pk: subject.pk,
         sk: subject.sk,
         name: name,
-        desc: desc,
-        username: user.user.username
+        desc: desc
       })
     })
       .then(response => {

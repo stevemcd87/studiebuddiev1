@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
@@ -16,6 +16,9 @@ function Subject(props) {
   //     {subject.name} - {subject.category}{" "}
   //   </Link>
   // </span>
+  useEffect(() => {
+    setDisplayUpdateForm(false);
+  }, [subject]);
   return (
     <div>
       <div>
