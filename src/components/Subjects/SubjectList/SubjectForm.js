@@ -5,26 +5,29 @@ function SubjectForm(props) {
   let { API, user } = useContext(ApiContext),
     { getSubjects, setSubjects, setShowForm, subject } = props,
     nameValue = subject ? subject.name : "",
-    categoryValue = subject ? subject.category : "",
+    descValue = subject ? subject.category : "",
     [name, setName] = useState(nameValue),
-    [category, setCategory] = useState(categoryValue);
-  useEffect(() => {
-    console.log(name + " - " + category);
-  }, [category, name]);
+    [desc, setDesc] = useState(descValue);
   return (
     <div>
       <h3>Create Subject</h3>
       <form id="subject-form">
-        <input
-          type="text"
-          onChange={e => setName(e.target.value)}
-          defaultValue={name}
-        />
-        <input
-          type="text"
-          onChange={e => setCategory(e.target.value)}
-          defaultValue={category}
-        />
+        <label>
+          Name
+          <input
+            type="text"
+            onChange={e => setName(e.target.value)}
+            defaultValue={name}
+          />
+        </label>
+        <label>
+          Description
+          <input
+            type="text"
+            onChange={e => setDesc(e.target.value)}
+            defaultValue={desc}
+          />
+        </label>
         <button type="button" onClick={submitForm}>
           submitForm
         </button>
@@ -32,36 +35,41 @@ function SubjectForm(props) {
     </div>
   );
   function submitForm() {
-    if (!subject) {
-      API.post("StuddieBuddie", "/subjects", {
-        body: JSON.stringify({ name: name, category: category,  username: user.user.username })
+    // if (!subject) {
+    API.post("StuddieBuddie", "/subjects", {
+      body: JSON.stringify({
+        name: name.trim().replace(" ", "-"),
+        desc: desc.trim().replace(" ", "-"),
+        username: user.user.username
       })
-        .then(response => {
-          console.log(response);
-          getSubjects(API, setSubjects);
-          setShowForm(false);
-        })
-        .catch(error => {
-          console.log(error.response);
-        });
-    } else {
-      API.put("StuddieBuddie", "/subjects", {
-        body: JSON.stringify({
-          name: nameValue,
-          category: category,
-          newName: name,
-          newCategory: category
-        })
+    })
+      .then(response => {
+        console.log(response);
+        // getSubjects(API, setSubjects);
+        // setShowForm(false);
       })
-        .then(response => {
-          console.log(response);
-          getSubjects(API, setSubjects);
-          setShowForm(false);
-        })
-        .catch(error => {
-          console.log(error.response);
-        });
-    }
+      .catch(error => {
+        console.log(error.response);
+      });
+    // }
+    // else {
+    //   API.put("StuddieBuddie", "/subjects", {
+    //     body: JSON.stringify({
+    //       name: nameValue,
+    //       category: category,
+    //       newName: name,
+    //       newCategory: category
+    //     })
+    //   })
+    //     .then(response => {
+    //       console.log(response);
+    //       getSubjects(API, setSubjects);
+    //       setShowForm(false);
+    //     })
+    //     .catch(error => {
+    //       console.log(error.response);
+    //     });
+    // }
   }
 }
 

@@ -11,7 +11,7 @@ function Subjects(props) {
   console.log(props);
   useEffect(() => {
     getSubjects(API, setSubjects);
-  }, [API]);
+  }, []);
   return (
     <div>
       {subjects.map(s => {
@@ -29,18 +29,16 @@ function Subjects(props) {
       <button type="button" onClick={() => setShowForm(!showForm)}>
         {showForm ? "Hide Form" : "Create Subject"}
       </button>
-      {showForm && (
-        <SubjectForm {...{ getSubjects, setSubjects, setShowForm }} />
-      )}
+      {showForm && <SubjectForm />}
     </div>
   );
-}
+} // end of component
 function getSubjects(API, setSubjects) {
   console.log("GET subjects");
   API.get("StuddieBuddie", "/subjects", { response: true })
     .then(response => {
       console.log(response);
-      setSubjects(response.data);
+      // setSubjects(response.data);
     })
     .catch(error => {
       console.log(error);
