@@ -12,9 +12,9 @@ function Subject(props) {
     [displayUpdateForm, setDisplayUpdateForm] = useState(false),
     [displayDesc, setDisplayDesc] = useState(false);
   // <span>
-  //   <Link to={`subjects/${subject.name}/${subject.category}`}>
+  //
   //     {subject.name} - {subject.category}{" "}
-  //   </Link>
+  //
   // </span>
   useEffect(() => {
     setDisplayUpdateForm(false);
@@ -23,7 +23,7 @@ function Subject(props) {
     <div>
       <div>
         <p>
-          {subject.name}
+          <Link to={`/subjects/${subject.name}`}>{subject.name}</Link>
           <button type="button" onClick={() => setDisplayDesc(!displayDesc)}>
             {!displayDesc && <FontAwesomeIcon icon={faArrowDown} />}
             {displayDesc && <FontAwesomeIcon icon={faArrowUp} />}

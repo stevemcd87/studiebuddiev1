@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import Subjects from "./SubjectList/Subjects";
+import SubjectDetail from "./SubjectList/SubjectDetail";
 import SubjectCategory from "./SubjectCategory/SubjectCategory";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
@@ -13,11 +14,14 @@ function SubjectMain() {
         {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
         <Switch>
-          <Route exact path="/">
-            <Subjects />
-          </Route>
           <Route path="/subjects/:name/:category">
             <SubjectCategory />
+          </Route>
+          <Route path="/subjects/:name">
+            <SubjectDetail />
+          </Route>
+          <Route exact path="/">
+            <Subjects />
           </Route>
         </Switch>
       </div>
