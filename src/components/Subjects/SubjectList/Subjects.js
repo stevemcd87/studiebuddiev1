@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import SubjectForm from "./SubjectForm";
 import Subject from "./Subject";
 import ApiContext from "../../../contexts/ApiContext";
+import SubjectContext from "../../../contexts/SubjectContext";
 
 function Subjects(props) {
   let { API } = useContext(ApiContext),
@@ -10,39 +11,47 @@ function Subjects(props) {
 
   console.log(props);
   useEffect(() => {
-    getSubjects(API, setSubjects);
+    getSubjects();
   }, []);
+
+  useEffect(() => {
+    setShowForm(false);
+  }, [subjects]);
   return (
     <div>
       {subjects.map(s => {
         return (
-          <Subject
-            {...{
-              key: s.name + s.category,
-              subject: s,
-              getSubjects,
-              setSubjects
-            }}
-          />
+          <SubjectContext.Provider
+            key={s.sk}
+            value={{ subject: s, getSubjects }}
+          >
+            <Subject />
+          </SubjectContext.Provider>
         );
       })}
       <button type="button" onClick={() => setShowForm(!showForm)}>
         {showForm ? "Hide Form" : "Create Subject"}
       </button>
-      {showForm && <SubjectForm />}
+      {showForm && (
+        <SubjectContext.Provider value={{ getSubjects }}>
+          <SubjectForm />
+        </SubjectContext.Provider>
+      )}
     </div>
   );
+  function getSubjects() {
+    console.log("GET subjects");
+    API.get("StuddieBuddie", "/subjects", { response: true })
+      .then(response => {
+        console.log("res");
+        console.log(response);
+        setSubjects(response.data);
+      })
+      .catch(error => {
+        console.log("er");
+        console.log(error);
+      });
+  }
 } // end of component
-function getSubjects(API, setSubjects) {
-  console.log("GET subjects");
-  API.get("StuddieBuddie", "/subjects", { response: true })
-    .then(response => {
-      console.log(response);
-      // setSubjects(response.data);
-    })
-    .catch(error => {
-      console.log(error);
-    });
-}
 
 export default Subjects;

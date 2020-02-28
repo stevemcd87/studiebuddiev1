@@ -1,64 +1,62 @@
 import React, { useState, useContext } from "react";
 import { Link } from "react-router-dom";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import ApiContext from "../../../contexts/ApiContext";
+import SubjectContext from "../../../contexts/SubjectContext";
 import SubjectForm from "./SubjectForm";
 function Subject(props) {
-  let { API } = useContext(ApiContext),
-    { subject, getSubjects, setSubjects } = props,
-    [showUpdateForm, setShowUpdateForm] = useState(false);
-
+  let { API, user } = useContext(ApiContext),
+    { subject, getSubjects } = useContext(SubjectContext),
+    // { subject, getSubjects, setSubjects } = props,
+    [displayUpdateForm, setDisplayUpdateForm] = useState(false),
+    [displayDesc, setDisplayDesc] = useState(false);
+  // <span>
+  //   <Link to={`subjects/${subject.name}/${subject.category}`}>
+  //     {subject.name} - {subject.category}{" "}
+  //   </Link>
+  // </span>
   return (
     <div>
-      <p>
-        <span>
-          <Link to={`subjects/${subject.name}/${subject.category}`}>
-            {subject.name} - {subject.category}{" "}
-          </Link>
-        </span>
-        <button
-          type="button"
-          onClick={() =>
-            deleteSubject(API, getSubjects, setSubjects, {
-              name: subject.name,
-              category: subject.category
-            })
-          }
-        >
-          Delete
-        </button>
-      </p>
-      {showUpdateForm && (
-        <SubjectForm
-          {...{
-            API,
-            getSubjects,
-            setSubjects,
-            setShowForm: setShowUpdateForm,
-            subject
-          }}
-        />
-      )}
+      <div>
+        <p>
+          {subject.name}
+          <button type="button" onClick={() => setDisplayDesc(!displayDesc)}>
+            {!displayDesc && <FontAwesomeIcon icon={faArrowDown} />}
+            {displayDesc && <FontAwesomeIcon icon={faArrowUp} />}
+          </button>
+          <button
+            type="button"
+            onClick={() => setDisplayUpdateForm(!displayUpdateForm)}
+          >
+            Update
+          </button>
+          <button type="button" onClick={deleteSubject}>
+            Delete
+          </button>
+        </p>
+        {displayDesc && <p>{subject.desc}</p>}
+      </div>
+      {displayUpdateForm && <SubjectForm {...{ subject }} />}
     </div>
   );
-}
 
-function deleteSubject(API, getSubjects, setSubjects, subjectKey) {
-  let { name, category } = subjectKey;
-  console.log("deleteSubject");
-  API.del("StuddieBuddie", "/subjects", {
-    body: JSON.stringify({
-      name: name,
-      category: category
+  function deleteSubject() {
+    console.log("deleteSubject");
+    API.del("StuddieBuddie", "/subjects", {
+      body: JSON.stringify({
+        pk: subject.pk,
+        sk: subject.sk
+      })
     })
-  })
-    .then(response => {
-      console.log(response);
-      getSubjects(API, setSubjects);
-    })
-    .catch(error => {
-      console.log(error.response);
-    });
-}
+      .then(response => {
+        console.log(response);
+        getSubjects();
+      })
+      .catch(error => {
+        console.log(error.response);
+      });
+  }
+} // End of Component
 
 export default Subject;
