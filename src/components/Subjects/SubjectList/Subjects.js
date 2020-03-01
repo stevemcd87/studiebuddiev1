@@ -22,7 +22,7 @@ function Subjects(props) {
       {subjects.map(s => {
         return (
           <SubjectContext.Provider
-            key={s.sk}
+            key={s.pathName}
             value={{ subject: s, getSubjects }}
           >
             <Subject />

@@ -13,7 +13,7 @@ function Subject(props) {
     [displayDesc, setDisplayDesc] = useState(false);
   // <span>
   //
-  //     {subject.name} - {subject.category}{" "}
+  //     {subject.navName} - {subject.category}{" "}
   //
   // </span>
   useEffect(() => {
@@ -23,7 +23,7 @@ function Subject(props) {
     <div>
       <div>
         <p>
-          <Link to={`/subjects/${subject.name}`}>{subject.name}</Link>
+          <Link to={`/subjects/${subject.navName}`}>{subject.navName}</Link>
           <button type="button" onClick={() => setDisplayDesc(!displayDesc)}>
             {!displayDesc && <FontAwesomeIcon icon={faArrowDown} />}
             {displayDesc && <FontAwesomeIcon icon={faArrowUp} />}
@@ -38,7 +38,7 @@ function Subject(props) {
             Delete
           </button>
         </p>
-        {displayDesc && <p>{subject.desc}</p>}
+        {displayDesc && <p>{subject.subjectDesc}</p>}
       </div>
       {displayUpdateForm && <SubjectForm {...{ subject }} />}
     </div>
@@ -48,8 +48,8 @@ function Subject(props) {
     console.log("deleteSubject");
     API.del("StuddieBuddie", "/subjects", {
       body: JSON.stringify({
-        pk: subject.pk,
-        sk: subject.sk
+        username: user.user.username,
+        pathName: subject.pathName
       })
     })
       .then(response => {

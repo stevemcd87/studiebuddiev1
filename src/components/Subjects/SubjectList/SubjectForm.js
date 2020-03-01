@@ -6,8 +6,8 @@ function SubjectForm(props) {
   let { API, user } = useContext(ApiContext),
     { getSubjects } = useContext(SubjectContext),
     { subject } = props,
-    nameValue = subject ? subject.name : "",
-    descValue = subject ? subject.desc : "",
+    nameValue = subject ? subject.navName : "",
+    descValue = subject ? subject.subjectDesc : "",
     [name, setName] = useState(nameValue),
     [desc, setDesc] = useState(descValue);
   return (
@@ -19,7 +19,8 @@ function SubjectForm(props) {
           <input
             type="text"
             onChange={e => setName(e.target.value)}
-            defaultValue={name}
+            value={name}
+            disabled={true}
           />
         </label>
         <label>
@@ -39,8 +40,8 @@ function SubjectForm(props) {
   function submitForm() {
     API.post("StuddieBuddie", "/subjects", {
       body: JSON.stringify({
-        name: name.trim().replace(" ", "-"),
-        desc: desc.trim().replace(" ", "-"),
+        subjectName: name.trim(),
+        subjectDesc: desc.trim(),
         username: user.user.username
       })
     })
@@ -56,10 +57,9 @@ function SubjectForm(props) {
   function updateForm() {
     API.put("StuddieBuddie", "/subjects", {
       body: JSON.stringify({
-        pk: subject.pk,
-        sk: subject.sk,
-        name: name,
-        desc: desc
+        username: user.user.username,
+        pathName: subject.pathName,
+        subjectDesc: desc
       })
     })
       .then(response => {
