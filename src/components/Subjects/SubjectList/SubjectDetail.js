@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import ApiContext from "../../../contexts/ApiContext";
 import SubjectContext from "../../../contexts/SubjectContext";
 function SubjectDetail() {
-  let { name } = useParams(),
+  let { pathName } = useParams(),
     { API, user } = useContext(ApiContext),
     [subject, setSubject] = useState();
   // { subject } = useContext(SubjectContext);
@@ -26,7 +26,11 @@ function SubjectDetail() {
   );
   function getSubject() {
     console.log("GET subject");
-    API.get("StuddieBuddie", `/subjects/${name}`)
+    API.get("StuddieBuddie", `/subjects/${pathName}`, {
+      body: {
+        username: user.user.username
+      }
+    })
       .then(response => {
         console.log("res");
         console.log(response);

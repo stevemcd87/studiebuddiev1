@@ -23,7 +23,7 @@ function Subject(props) {
     <div>
       <div>
         <p>
-          <Link to={`/subjects/${subject.navName}`}>{subject.navName}</Link>
+          <Link to={`/subjects/${subject.pathName}`}>{subject.navName}</Link>
           <button type="button" onClick={() => setDisplayDesc(!displayDesc)}>
             {!displayDesc && <FontAwesomeIcon icon={faArrowDown} />}
             {displayDesc && <FontAwesomeIcon icon={faArrowUp} />}

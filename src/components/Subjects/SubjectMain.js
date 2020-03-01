@@ -14,10 +14,10 @@ function SubjectMain() {
         {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
         <Switch>
-          <Route path="/subjects/:name/:category">
+          <Route path="/subjects/:pathName/:category">
             <SubjectCategory />
           </Route>
-          <Route path="/subjects/:name">
+          <Route path="/subjects/:pathName">
             <SubjectDetail />
           </Route>
           <Route exact path="/">
