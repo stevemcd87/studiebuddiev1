@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import ApiContext from "../../../contexts/ApiContext";
 
 export default function CategoryForm(props) {
-  let { subject } = props,
+  let { subject, getSubject } = props,
     { API, user } = useContext(ApiContext),
     [categoryName, setCategoryName] = useState(""),
     [categoryDesc, setCategoryDesc] = useState("");
@@ -35,7 +35,7 @@ export default function CategoryForm(props) {
       .then(response => {
         console.log("response postCategory");
         console.log(response);
-        // getSubjects();
+        getSubject();
       })
       .catch(error => {
         console.log("err postCategory");

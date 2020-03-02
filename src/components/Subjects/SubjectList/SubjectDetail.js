@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import ApiContext from "../../../contexts/ApiContext";
 import SubjectContext from "../../../contexts/SubjectContext";
 import CategoryForm from "./CategoryForm";
+import { Link } from "react-router-dom";
 
 function SubjectDetail() {
   let { pathName } = useParams(),
@@ -14,6 +15,11 @@ function SubjectDetail() {
   useEffect(() => {
     getSubject();
   }, []);
+
+  useEffect(() => {
+    console.log(subject);
+    setDisplayCategoryForm(false);
+  }, [subject]);
   return (
     <div className="subject-detail-component">
       <div className="subject-detail">
@@ -24,9 +30,15 @@ function SubjectDetail() {
       <div>
         {categories.map(category => {
           return (
-            <div key={category.desc} className="category">
+            <div key={category.pathName} className="category">
               <p>
-                {category.name} - {category.desc}
+                <Link to={`/subjects/${subject.pathName}/${category.urlName}`}>
+                  {category.name}
+                </Link>
+                - {category.desc}
+                <button type="button" onClick={() => deleteCategory(category)}>
+                  Delete
+                </button>
               </p>
             </div>
           );
@@ -38,9 +50,28 @@ function SubjectDetail() {
       >
         Create Category
       </button>
-      {displayCategoryForm && <CategoryForm {...{ subject }} />}
+      {displayCategoryForm && <CategoryForm {...{ subject, getSubject }} />}
     </div>
   );
+
+  function deleteCategory(c) {
+    console.log("deleteCategory");
+    API.del("StuddieBuddie", `/subjects/${subject.pathName}`, {
+      body: JSON.stringify({
+        username: user.user.username,
+        pathName: c.pathName
+      })
+    })
+      .then(response => {
+        console.log("response");
+        console.log(response);
+        getSubject();
+      })
+      .catch(error => {
+        console.error(error.response);
+      });
+  }
+
   function getSubject() {
     console.log("GET subject");
     API.get("StuddieBuddie", `/subjects/${pathName}`, {
@@ -53,12 +84,12 @@ function SubjectDetail() {
         console.log(response);
         setSubject(response[0]);
         let c = response.slice(1).map(v => {
+          let urlName = v.pathName.split("#")[1].split("_")[1];
           return {
-            name: v.pathName
-              .split("#")[1]
-              .split("_")[0]
-              .replace("-", " "),
-            desc: v.categoryDesc
+            name: urlName.replace("-", " "),
+            desc: v.categoryDesc,
+            pathName: v.pathName,
+            urlName: urlName
           };
         });
         console.log(c);
