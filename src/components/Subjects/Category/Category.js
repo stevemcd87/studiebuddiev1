@@ -24,9 +24,7 @@ export default function Category() {
   // {categoryNotes && (
   // //  <Notes {...{ categoryNotes, setCategoryNotes }} />
   // )}
-  // {displayNoteForm && (
-  // //  <NoteForm {...{ category, setCategoryNotes }} />
-  // )}
+
   return (
     <div>
       <h2>{categoryName.replace("-", " ")}</h2>
@@ -36,8 +34,7 @@ export default function Category() {
       >
         Create Note
       </button>
-
-      <p>Category</p>
+      {displayNoteForm && <NoteForm {...{ category }} />}
     </div>
   );
   function getCategory() {
