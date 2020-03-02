@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import Subjects from "./SubjectList/Subjects";
 import SubjectDetail from "./SubjectList/SubjectDetail";
-import SubjectCategory from "./SubjectCategory/SubjectCategory";
+import Category from "./Category/Category";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 function SubjectMain() {
@@ -14,10 +14,10 @@ function SubjectMain() {
         {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
         <Switch>
-          <Route path="/subjects/:pathName/:category">
-            <SubjectCategory />
+          <Route path="/subjects/:subjectName/:categoryName">
+            <Category />
           </Route>
-          <Route path="/subjects/:pathName">
+          <Route path="/subjects/:subjectName">
             <SubjectDetail />
           </Route>
           <Route exact path="/">

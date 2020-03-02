@@ -6,7 +6,7 @@ import CategoryForm from "./CategoryForm";
 import { Link } from "react-router-dom";
 
 function SubjectDetail() {
-  let { pathName } = useParams(),
+  let { subjectName } = useParams(),
     { API, user } = useContext(ApiContext),
     [subject, setSubject] = useState({}),
     [categories, setCategories] = useState([]),
@@ -74,7 +74,7 @@ function SubjectDetail() {
 
   function getSubject() {
     console.log("GET subject");
-    API.get("StuddieBuddie", `/subjects/${pathName}`, {
+    API.get("StuddieBuddie", `/subjects/${subjectName}`, {
       queryStringParameters: {
         username: user.user.username
       }
@@ -100,10 +100,6 @@ function SubjectDetail() {
         console.log("er");
         console.log(error);
       });
-  }
-
-  function createCategory() {
-    console.log("create category");
   }
 }
 
