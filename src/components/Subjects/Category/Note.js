@@ -2,39 +2,33 @@ import React, { useState, useEffect, useContext } from "react";
 import NoteForm from "./NoteForm";
 import { useParams } from "react-router-dom";
 import ApiContext from "../../../contexts/ApiContext";
+import CategoryContext from "../../../contexts/CategoryContext";
 function Note(props) {
-  let {
-      note,
-      subjectCategoryNotes,
-      setSubjectCategoryNotes,
-      noteIndex
-    } = props,
+  let { note } = props,
+    { subjectName, categoryName } = useParams(),
     [mediaRecorder, setMediaRecorder] = useState(),
     [audioBlob, setAudioBlob] = useState(),
     [audio, setAudio] = useState(),
-    [displayEdit, setDisplayEdit] = useState(false),
-    { name, category } = useParams(),
-    { API, Storage } = useContext(ApiContext);
-
+    [displayForm, setDisplayForm] = useState(false),
+    { categoryNotes, getCategoryNotes } = useContext(CategoryContext),
+    { API, Storage, user } = useContext(ApiContext);
 
   useEffect(() => {
-    setDisplayEdit(false);
-  }, [subjectCategoryNotes]);
-
-
+    setDisplayForm(false);
+    console.log('note');
+    console.log(note);
+  }, [categoryNotes]);
 
   // useEffect(() => {
   //   console.log(mediaRecorder);
   // }, [mediaRecorder]);
 
-
-
   function playAudio(s3Key) {
     // audio.play();
     console.log(s3Key);
-    Storage.get(s3Key.replace('public/',''))
+    Storage.get(s3Key.replace("public/", ""))
       .then(res => {
-        console.log("res");
+        console.log("play audio res");
         console.log(res);
         // setAudioBlob(res);
         new Audio(res).play();
@@ -44,8 +38,6 @@ function Note(props) {
       });
   }
 
-
-
   // <div className="test">
   //   <p> Pick a file(AUDIO)</p>
   //   <input type="file" onChange={uploadFile} />
@@ -53,27 +45,22 @@ function Note(props) {
 
   return (
     <div className="note">
-      <span className="delete-note" onClick={() => deleteNote(noteIndex)}>
+      <span className="delete-note" onClick={() => deleteNote(note)}>
         X
       </span>
-      {displayEdit && (
-        <NoteForm
-          {...{
-            note,
-            subjectCategoryNotes,
-            setSubjectCategoryNotes,
-            noteIndex
-          }}
-        />
-      )}
-      {!displayEdit && (
+      {displayForm && <NoteForm {...{ note }} />}
+      {!displayForm && (
         <div className="note-detail">
-          {note.audioNoteKey && <button onClick={()=>playAudio(note.audioNoteKey)}>Play Audio Note</button>}
-          <p>{note.title}</p>
-          {note.notes && note.notes.map((n, i) => <p key={n + i}>{n}</p>)}
+          {note.audioNote && (
+            <button onClick={() => playAudio(note.audioNote)}>
+              Play Audio Note
+            </button>
+          )}
+          {note.mainNote && <p>{note.mainNote}</p>}
+          {note.subnotes && note.subnotes.map((n, i) => <p key={n + i}>{n}</p>)}
           <span
             className="edit-note"
-            onClick={() => setDisplayEdit(!displayEdit)}
+            onClick={() => setDisplayForm(!displayForm)}
           >
             Edit Note
           </span>
@@ -81,17 +68,22 @@ function Note(props) {
       )}
     </div>
   );
-  function deleteNote(index) {
+
+
+  function deleteNote(n) {
     console.log("deleteNote");
-    API.del("StuddieBuddie", `/subjects/${name}/${category}/notes/${index}`, {})
+    API.del("StuddieBuddie", `/subjects/${subjectName}/${categoryName}/notes/${n.pathName}`, {
+      body: JSON.stringify({
+        username: user.user.username,
+        pathName: n.pathName
+      })
+    })
       .then(response => {
-        let em = JSON.parse(response.errorMessage);
-        console.log("response");
-        console.log(em);
-        setSubjectCategoryNotes(em.data.Attributes.notes);
+        console.log('delete note response');
+        console.log(response);
+        getCategoryNotes();
       })
       .catch(error => {
-        console.log("error");
         console.log(error.response);
       });
   }

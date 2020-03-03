@@ -1,26 +1,22 @@
-import React from "react";
-//  { useState, useEffect, useContext }
+import React, { useContext } from "react";
+import CategoryContext from "../../../contexts/CategoryContext";
 import Note from "./Note";
+// import Note from "./NoteForm";
 
 function Notes(props) {
-  let { subjectCategoryNotes, setSubjectCategoryNotes } = props;
+  let { categoryNotes } = useContext(CategoryContext);
   return (
     <div className="notes">
-      {subjectCategoryNotes.map((note, noteIndex) => {
-        return (
-          <Note
-            key={note.id}
-            {...{
-              note,
-              noteIndex,
-              subjectCategoryNotes,
-              setSubjectCategoryNotes
-            }}
-          />
-        );
+      {categoryNotes.map(note => {
+        return  (  <Note
+            key={note.pathName}
+            note={note}
+
+          />)
       })}
     </div>
   );
 }
+// return (
 
 export default Notes;

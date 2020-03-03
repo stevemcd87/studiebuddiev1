@@ -149,20 +149,12 @@ function NoteForm(props) {
       <div className="note-array" ref={noteArray}>
         {subnotes.map(noteInputComponent => noteInputComponent)}
       </div>
-
       <button type="button" onClick={addNoteInput}>
         Add Note
       </button>
-      {!note && (
-        <button type="submit" onClick={prepNote}>
-          Submit
-        </button>
-      )}
-      {note && (
-        <button type="button" onClick={prepNote}>
-          Update Note
-        </button>
-      )}
+      <button type="button" onClick={prepNote}>
+        {!note ? "Post Note" : "Update Note"}
+      </button>
     </div>
   );
 
