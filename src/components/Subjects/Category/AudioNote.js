@@ -17,11 +17,12 @@ export default function AudioNote(props) {
     navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
       const mr = new MediaRecorder(stream);
       setMediaRecorder(mr);
+      return function cleanup() {
+        mediaRecorder.removeEventListener("dataavailable", () => {});
+        mediaRecorder.removeEventListener("stop", () => {});
+      };
     });
-    return function cleanup() {
-      mediaRecorder.removeEventListener("dataavailable", () => {});
-      mediaRecorder.removeEventListener("stop", () => {});
-    };
+
   }, []);
 
   useEffect(() => {

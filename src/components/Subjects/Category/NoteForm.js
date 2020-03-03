@@ -3,6 +3,8 @@ import AudioNote from './AudioNote';
 import { useParams } from "react-router-dom";
 import "./NoteForm.css";
 import ApiContext from "../../../contexts/ApiContext";
+import CategoryContext from "../../../contexts/CategoryContext";
+
 function NoteForm(props) {
   let { subjectName, categoryName } = useParams(),
     { note } = props,
@@ -11,6 +13,7 @@ function NoteForm(props) {
     [audioBlob, setAudioBlob] = useState(),
     [subnotes, setSubnotes] = useState([]),
     noteArray = useRef(null),
+    { getCategoryNotes } = useContext(CategoryContext),
     { API, Storage, user } = useContext(ApiContext);
 
 
@@ -48,39 +51,6 @@ function NoteForm(props) {
   }
 
 
-
-  // <button onClick={uploadFile}> Save</button>
-  // <div className="audio-note-component">
-  //   <h3>Audio Note</h3>
-  //   {note && note.audioNoteKey && <button onClick={getData}></button>}
-  //   <button disabled={recording} onClick={startRecord}>
-  //     <FontAwesomeIcon icon={faRecordVinyl} />
-  //   </button>
-  //   <button
-  //     disabled={!recording}
-  //     onClick={() => {
-  //       mediaRecorder.stop();
-  //       setRecording(false);
-  //     }}
-  //   >
-  //     <FontAwesomeIcon icon={faStop} />
-  //   </button>
-  //
-  //   <button
-  //     className="play-audio-button"
-  //     onClick={playAudio}
-  //     disabled={!audio}
-  //   >
-  //     <FontAwesomeIcon icon={faPlay} />
-  //   </button>
-  //   <button
-  //     className="delete-audio-button"
-  //     onClick={() => setAudioBlob(null)}
-  //     disabled={!audio}
-  //   >
-  //     <FontAwesomeIcon icon={faTrash} />
-  //   </button>
-  // </div>
   return (
     <div className="note-form">
       <AudioNote {...{note,audioBlob, setAudioBlob}}/>
@@ -103,17 +73,8 @@ function NoteForm(props) {
     </div>
   );
 
-  function updateNote(n) {
-  }
-
-  function addNoteInput() {
-    // Assigns a 'key' value for Component
-    let key = subnotes[0] ? subnotes[subnotes.length - 1].key + 1 : 0;
-    setSubnotes([...subnotes, <NoteInput {...{ key }} />]);
-  }
-
   function prepNote() {
-    console.log("postNote");
+    console.log("prepNote");
     let noteValues = {
       username: user.user.username,
       mainNote: mainNote ? mainNote.trim() : false,
@@ -121,6 +82,7 @@ function NoteForm(props) {
       audioNote: audioBlob ? true : false,
       image: image ? true : false
     };
+    if (note) noteValues.pathName = note.pathName;
     // for subNotes
     console.log("noteValues");
     console.log(noteValues);
@@ -129,6 +91,18 @@ function NoteForm(props) {
     });
     console.log(note);
     !note ? postNote(noteValues) : updateNote(noteValues);
+  }
+
+  function updateNote(n) {
+    API.put("StuddieBuddie", `/subjects/${subjectName}/${categoryName}/notes/${n.pathName}`, {
+      body: JSON.stringify(n)
+    }).then(response => {
+      console.log('update note response');
+      console.log(response);
+      getCategoryNotes();
+    }).catch(error => {
+        console.log(error.response)
+    });
   }
 
   function postNote(n) {
@@ -162,6 +136,14 @@ function NoteForm(props) {
         console.log(error);
       });
   }
+
+  function addNoteInput() {
+    // Assigns a 'key' value for Component
+    let key = subnotes[0] ? subnotes[subnotes.length - 1].key + 1 : 0;
+    setSubnotes([...subnotes, <NoteInput {...{ key }} />]);
+  }
+
+
 } // End of component
 function NoteInput(props) {
   let { note } = props;
