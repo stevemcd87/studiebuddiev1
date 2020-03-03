@@ -1,50 +1,20 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
+import AudioNote from './AudioNote';
 import { useParams } from "react-router-dom";
 import "./NoteForm.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faPlay,
-  faStop,
-  faRecordVinyl,
-  faTrash
-} from "@fortawesome/free-solid-svg-icons";
 import ApiContext from "../../../contexts/ApiContext";
 function NoteForm(props) {
   let { subjectName, categoryName } = useParams(),
     { note } = props,
     [image, setImage] = useState(),
-    [mediaRecorder, setMediaRecorder] = useState(),
-    [audioBlob, setAudioBlob] = useState(),
-    [audio, setAudio] = useState(),
-    [recording, setRecording] = useState(false),
     [mainNote, setMainNote] = useState(note ? note.mainNote : ""),
-    // NoteInput Component list
+    [audioBlob, setAudioBlob] = useState(),
     [subnotes, setSubnotes] = useState([]),
     noteArray = useRef(null),
     { API, Storage, user } = useContext(ApiContext);
 
 
-// for Audio Note componentDidMount
-  useEffect(() => {
-    navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-      const mr = new MediaRecorder(stream);
-      setMediaRecorder(mr);
-    });
-    return function cleanup() {
-      mediaRecorder.removeEventListener("dataavailable", () => {});
-      mediaRecorder.removeEventListener("stop", () => {});
-    };
-  }, []);
 
-  useEffect(() => {
-    if (audioBlob) {
-      console.log(URL);
-      const audioUrl = URL.createObjectURL(audioBlob);
-      setAudio(new Audio(audioUrl));
-    } else {
-      setAudio(null);
-    }
-  }, [audioBlob]);
 
   useEffect(() => {
     console.log("note");
@@ -64,29 +34,6 @@ function NoteForm(props) {
 
   }, []);
 
-  useEffect(() => {
-    if (recording) {
-      mediaRecorder.start();
-      let audioChunks = [];
-      mediaRecorder.addEventListener("dataavailable", event => {
-        console.log(event);
-        audioChunks.push(event.data);
-      });
-
-      mediaRecorder.addEventListener("stop", () => {
-        setAudioBlob(new Blob(audioChunks));
-      });
-      console.log("recording");
-    }
-  }, [recording]);
-
-  function startRecord() {
-    setRecording(true);
-  }
-
-  function playAudio() {
-    audio.play();
-  }
 
   function uploadFile(evt) {
     console.log("uploadFile");
@@ -100,54 +47,43 @@ function NoteForm(props) {
     //   });
   }
 
-  function getData() {
-    Storage.get(note.audioNoteKey)
-      .then(res => {
-        console.log("res");
-        console.log(res);
-        // setAudioBlob(res);
-        new Audio(res).play();
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  }
+
 
   // <button onClick={uploadFile}> Save</button>
-
+  // <div className="audio-note-component">
+  //   <h3>Audio Note</h3>
+  //   {note && note.audioNoteKey && <button onClick={getData}></button>}
+  //   <button disabled={recording} onClick={startRecord}>
+  //     <FontAwesomeIcon icon={faRecordVinyl} />
+  //   </button>
+  //   <button
+  //     disabled={!recording}
+  //     onClick={() => {
+  //       mediaRecorder.stop();
+  //       setRecording(false);
+  //     }}
+  //   >
+  //     <FontAwesomeIcon icon={faStop} />
+  //   </button>
+  //
+  //   <button
+  //     className="play-audio-button"
+  //     onClick={playAudio}
+  //     disabled={!audio}
+  //   >
+  //     <FontAwesomeIcon icon={faPlay} />
+  //   </button>
+  //   <button
+  //     className="delete-audio-button"
+  //     onClick={() => setAudioBlob(null)}
+  //     disabled={!audio}
+  //   >
+  //     <FontAwesomeIcon icon={faTrash} />
+  //   </button>
+  // </div>
   return (
     <div className="note-form">
-      <div className="audio-note">
-        <h3>Audio Note</h3>
-        {note && note.audioNoteKey && <button onClick={getData}></button>}
-        <button disabled={recording} onClick={startRecord}>
-          <FontAwesomeIcon icon={faRecordVinyl} />
-        </button>
-        <button
-          disabled={!recording}
-          onClick={() => {
-            mediaRecorder.stop();
-            setRecording(false);
-          }}
-        >
-          <FontAwesomeIcon icon={faStop} />
-        </button>
-
-        <button
-          className="play-audio-button"
-          onClick={playAudio}
-          disabled={!audio}
-        >
-          <FontAwesomeIcon icon={faPlay} />
-        </button>
-        <button
-          className="delete-audio-button"
-          onClick={() => setAudioBlob(null)}
-          disabled={!audio}
-        >
-          <FontAwesomeIcon icon={faTrash} />
-        </button>
-      </div>
+      <AudioNote {...{note,audioBlob, setAudioBlob}}/>
       <input
         className="note-mainNote"
         type="text"
@@ -182,7 +118,7 @@ function NoteForm(props) {
       username: user.user.username,
       mainNote: mainNote ? mainNote.trim() : false,
       subnotes: [],
-      audioNote: audio ? true : false,
+      audioNote: audioBlob ? true : false,
       image: image ? true : false
     };
     // for subNotes
@@ -203,7 +139,7 @@ function NoteForm(props) {
         console.log("response posting note");
         console.log(response);
         setTimeout(function() {
-          if (audio) {
+          if (audioBlob) {
             console.log("audio");
             // Storage.put(
             //   `${name}/${category}/${em.data.Attributes.subnotes.length -
