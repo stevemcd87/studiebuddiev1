@@ -23,21 +23,17 @@ function NoteForm(props) {
     noteArray = useRef(null),
     { API, Storage, user } = useContext(ApiContext);
 
+
+// for Audio Note componentDidMount
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-      console.log("stream");
-      console.log(stream);
       const mr = new MediaRecorder(stream);
-      console.log("mediaRecorder");
-      console.log(mr);
       setMediaRecorder(mr);
-      console.log("note");
-      console.log(note);
-      return function cleanup() {
-        mediaRecorder.removeEventListener("dataavailable", () => {});
-        mediaRecorder.removeEventListener("stop", () => {});
-      };
     });
+    return function cleanup() {
+      mediaRecorder.removeEventListener("dataavailable", () => {});
+      mediaRecorder.removeEventListener("stop", () => {});
+    };
   }, []);
 
   useEffect(() => {
@@ -54,6 +50,19 @@ function NoteForm(props) {
     console.log("note");
     console.log(note);
   }, [note]);
+
+// for SubNotes if updating note
+  useEffect(() => {
+    if (note && note.subnotes){
+      let sn = [];
+      note.subnotes.forEach((v)=>{
+        let key = sn[0] ? sn[sn.length - 1].key + 1 : 0;
+        sn.push(<NoteInput note={v}{...{ key } } />);
+      })
+      setSubnotes(sn);
+    }
+
+  }, []);
 
   useEffect(() => {
     if (recording) {
@@ -150,7 +159,7 @@ function NoteForm(props) {
         {subnotes.map(noteInputComponent => noteInputComponent)}
       </div>
       <button type="button" onClick={addNoteInput}>
-        Add Note
+        Add Subnote
       </button>
       <button type="button" onClick={prepNote}>
         {!note ? "Post Note" : "Update Note"}
@@ -159,39 +168,6 @@ function NoteForm(props) {
   );
 
   function updateNote(n) {
-    //   console.log("het");
-    //   console.log(n);
-    //   API.put(
-    //     "StuddieBuddie",
-    //     `/subjects/${name}/${category}/subnotes/${noteIndex}`,
-    //     {
-    //       body: JSON.stringify(n)
-    //     }
-    //   )
-    //     .then(response => {
-    //       console.log("em");
-    //       console.log(em);
-    //       let em = JSON.parse(response.errorMessage),
-    //         scn = subjectCategoryNotes.slice();
-    //       // scn[noteIndex] = em.data.Attributes.subnotes[0];
-    //       if (audioBlob) {
-    //         Storage.put(`${name}/${category}/${note.id}`, audioBlob)
-    //           .then(res => {
-    //             console.log(res);
-    //             console.log("storage PUT  complete");
-    //             setSubjectCategoryNotes(scn);
-    //           })
-    //           .catch(err => {
-    //             console.log(err);
-    //           });
-    //       } else {
-    //         setSubjectCategoryNotes(scn);
-    //       }
-    //     })
-    //     .catch(error => {
-    //       console.log("ERROR");
-    //       console.log(error);
-    //     });
   }
 
   function addNoteInput() {
@@ -251,10 +227,6 @@ function NoteForm(props) {
       });
   }
 } // End of component
-
-// function displayNotes(subnotesArray, setSubnotes) {
-//   setSubnotes(subnotesArray.map((n, i) => <NoteInput key={i} note={n} />));
-// }
 function NoteInput(props) {
   let { note } = props;
   return (
@@ -263,5 +235,9 @@ function NoteInput(props) {
     </div>
   );
 }
+// function displayNotes(subnotesArray, setSubnotes) {
+//   setSubnotes(subnotesArray.map((n, i) => <NoteInput key={i} note={n} />));
+// }
+
 
 export default NoteForm;
