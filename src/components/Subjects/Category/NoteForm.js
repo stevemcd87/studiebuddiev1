@@ -1,24 +1,26 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import { useParams } from "react-router-dom";
 import "./NoteForm.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faPlay,
+  faStop,
+  faRecordVinyl,
+  faTrash
+} from "@fortawesome/free-solid-svg-icons";
 import ApiContext from "../../../contexts/ApiContext";
 function NoteForm(props) {
-  let {
-      subjectCategoryNotes,
-      setSubjectCategoryNotes,
-      note,
-      noteIndex
-    } = props,
+  let { subjectName, categoryName } = useParams(),
+    { note } = props,
     [mediaRecorder, setMediaRecorder] = useState(),
     [audioBlob, setAudioBlob] = useState(),
     [audio, setAudio] = useState(),
     [recording, setRecording] = useState(false),
-    { name, category } = useParams(),
     [title, setTitle] = useState(note ? note.title : ""),
     // NoteInput Component list
     [notes, setNotes] = useState([]),
     noteArray = useRef(null),
-    { API , Storage} = useContext(ApiContext);
+    { API, Storage } = useContext(ApiContext);
 
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
@@ -30,24 +32,26 @@ function NoteForm(props) {
       setMediaRecorder(mr);
       console.log("note");
       console.log(note);
-
       return function cleanup() {
         mediaRecorder.removeEventListener("dataavailable", () => {});
         mediaRecorder.removeEventListener("stop", () => {});
-        // ChatAPI.unsubscribeFromFriendStatus(props.friend.id, handleStatusChange);
       };
     });
   }, []);
+
   useEffect(() => {
     if (audioBlob) {
       console.log(URL);
       const audioUrl = URL.createObjectURL(audioBlob);
       setAudio(new Audio(audioUrl));
+    } else {
+      setAudio(null);
     }
   }, [audioBlob]);
 
   useEffect(() => {
-    if (note) displayNotes(note.notes, setNotes);
+    console.log("note");
+    console.log(note);
   }, [note]);
 
   useEffect(() => {
@@ -64,26 +68,10 @@ function NoteForm(props) {
       });
       console.log("recording");
     }
-  }, [ recording]);
-
-  useEffect(() => {
-    // console.log("subjectCategoryNotes");
-    // console.log(subjectCategoryNotes);
-    console.log(noteIndex);
-  }, [noteIndex]);
+  }, [recording]);
 
   function startRecord() {
     setRecording(true);
-    // mediaRecorder.start();
-    // let audioChunks = [];
-    // mediaRecorder.addEventListener("dataavailable", event => {
-    //   console.log(event);
-    //   audioChunks.push(event.data);
-    // });
-    //
-    // mediaRecorder.addEventListener("stop", () => {
-    //   setAudioBlob(new Blob(audioChunks));
-    // });
   }
 
   function playAudio() {
@@ -91,14 +79,15 @@ function NoteForm(props) {
   }
 
   function uploadFile(evt) {
-    console.log("u");
-    // let file = evt.target.files[0],
-    //   name = file.name;
-    Storage.put(`${name}/${category}/${note.id}/noteIndex`, audioBlob)
-      .then(res => console.log(res))
-      .catch(err => {
-        console.log(err);
-      });
+    console.log("uploadFile");
+    // Storage.put(
+    //   `${subjectName}/${categoryName}/${note.id}/noteIndex`,
+    //   audioBlob
+    // )
+    //   .then(res => console.log(res))
+    //   .catch(err => {
+    //     console.error(err);
+    //   });
   }
 
   function getData() {
@@ -114,14 +103,40 @@ function NoteForm(props) {
       });
   }
 
+  // <button onClick={uploadFile}> Save</button>
+
   return (
     <div className="note-form">
       <div className="audio-note">
-        {note && note.audioNoteKey && <button onClick={getData}>Play Audio Note</button>}
-        <button onClick={startRecord}>{recording ? 'Recording..' :'start recording'}</button>
-        <button onClick={() => {mediaRecorder.stop(); setRecording(false)}}>stop</button>
-        <button onClick={uploadFile}> Save</button>
-        {audio && <button onClick={playAudio}>Play Audio Note</button>}
+        <h3>Audio Note</h3>
+        {note && note.audioNoteKey && <button onClick={getData}></button>}
+        <button disabled={recording} onClick={startRecord}>
+          <FontAwesomeIcon icon={faRecordVinyl} />
+        </button>
+        <button
+          disabled={!recording}
+          onClick={() => {
+            mediaRecorder.stop();
+            setRecording(false);
+          }}
+        >
+          <FontAwesomeIcon icon={faStop} />
+        </button>
+
+        <button
+          className="play-audio-button"
+          onClick={playAudio}
+          disabled={!audio}
+        >
+          <FontAwesomeIcon icon={faPlay} />
+        </button>
+        <button
+          className="delete-audio-button"
+          onClick={() => setAudioBlob(null)}
+          disabled={!audio}
+        >
+          <FontAwesomeIcon icon={faTrash} />
+        </button>
       </div>
       <input
         className="note-title"
@@ -151,40 +166,39 @@ function NoteForm(props) {
   );
 
   function updateNote(n) {
-    console.log("het");
-    console.log(n);
-    API.put(
-      "StuddieBuddie",
-      `/subjects/${name}/${category}/notes/${noteIndex}`,
-      {
-        body: JSON.stringify(n)
-      }
-    )
-      .then(response => {
-        console.log("em");
-        console.log(em);
-        let em = JSON.parse(response.errorMessage),
-         scn = subjectCategoryNotes.slice();
-        // scn[noteIndex] = em.data.Attributes.notes[0];
-        if (audioBlob){
-          Storage.put(`${name}/${category}/${note.id}`, audioBlob)
-            .then(res => {
-              console.log(res);
-              console.log('storage PUT  complete');
-              setSubjectCategoryNotes(scn);})
-            .catch(err => {
-              console.log(err);
-            });
-        } else {
-          setSubjectCategoryNotes(scn);
-        }
-
-
-      })
-      .catch(error => {
-        console.log("ERROR");
-        console.log(error);
-      });
+    //   console.log("het");
+    //   console.log(n);
+    //   API.put(
+    //     "StuddieBuddie",
+    //     `/subjects/${name}/${category}/notes/${noteIndex}`,
+    //     {
+    //       body: JSON.stringify(n)
+    //     }
+    //   )
+    //     .then(response => {
+    //       console.log("em");
+    //       console.log(em);
+    //       let em = JSON.parse(response.errorMessage),
+    //         scn = subjectCategoryNotes.slice();
+    //       // scn[noteIndex] = em.data.Attributes.notes[0];
+    //       if (audioBlob) {
+    //         Storage.put(`${name}/${category}/${note.id}`, audioBlob)
+    //           .then(res => {
+    //             console.log(res);
+    //             console.log("storage PUT  complete");
+    //             setSubjectCategoryNotes(scn);
+    //           })
+    //           .catch(err => {
+    //             console.log(err);
+    //           });
+    //       } else {
+    //         setSubjectCategoryNotes(scn);
+    //       }
+    //     })
+    //     .catch(error => {
+    //       console.log("ERROR");
+    //       console.log(error);
+    //     });
   }
 
   function addNoteInput() {
@@ -195,10 +209,9 @@ function NoteForm(props) {
 
   function postNote() {
     console.log("postNote");
-      let noteValues = {
+    let noteValues = {
       title,
-      notes: [],
-
+      notes: []
     };
 
     [...noteArray.current.querySelectorAll(".note")].forEach(noteElement => {
@@ -209,36 +222,37 @@ function NoteForm(props) {
   }
 
   function submitForm(n) {
-    API.post("StuddieBuddie", `/subjects/${name}/${category}`, {
+    API.post("StuddieBuddie", `/subjects/${subjectName}/${categoryName}`, {
       body: JSON.stringify(n)
     })
       .then(response => {
-        console.log('posting note');
+        console.log("posting note");
         console.log(response);
         let em = JSON.parse(response.errorMessage),
           id = em.data.Attributes.notes[notes.length].id;
-          // console.log("parse error");
-          // console.log(em.data.Attributes.notes);
-          // setSubjectCategoryNotes();
-          // console.log("response");
-          // console.log(response);
+        // console.log("parse error");
+        // console.log(em.data.Attributes.notes);
+        // setSubjectCategoryNotes();
+        // console.log("response");
+        // console.log(response);
         console.log(em);
-        setTimeout(function () {
-          if (audioBlob){
-            Storage.put(`${name}/${category}/${em.data.Attributes.notes.length - 1}/${id}`, audioBlob)
-              .then(res => {
-                console.log(res);
-                console.log('storage PUT  complete');
-                setSubjectCategoryNotes(em.data.Attributes.notes);
-              })
-              .catch(err => {
-                console.log(err);
-              });
+        setTimeout(function() {
+          if (audioBlob) {
+            // Storage.put(
+            //   `${name}/${category}/${em.data.Attributes.notes.length -
+            //     1}/${id}`,
+            //   audioBlob
+            // )
+            //   .then(res => {
+            //     console.log(res);
+            //     console.log("storage PUT  complete");
+            //     setSubjectCategoryNotes(em.data.Attributes.notes);
+            //   })
+            //   .catch(err => {
+            //     console.log(err);
+            //   });
           }
-}, 5000);
-
-
-
+        }, 5000);
       })
       .catch(error => {
         console.log("ERROR");

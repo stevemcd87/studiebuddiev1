@@ -34,7 +34,7 @@ export default function Category() {
       >
         Create Note
       </button>
-      {displayNoteForm && <NoteForm {...{ category }} />}
+      {!displayNoteForm && <NoteForm {...{ category }} />}
     </div>
   );
   function getCategory() {
