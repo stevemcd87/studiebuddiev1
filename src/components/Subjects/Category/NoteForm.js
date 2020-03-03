@@ -12,15 +12,16 @@ import ApiContext from "../../../contexts/ApiContext";
 function NoteForm(props) {
   let { subjectName, categoryName } = useParams(),
     { note } = props,
+    [image, setImage] = useState(),
     [mediaRecorder, setMediaRecorder] = useState(),
     [audioBlob, setAudioBlob] = useState(),
     [audio, setAudio] = useState(),
     [recording, setRecording] = useState(false),
-    [title, setTitle] = useState(note ? note.title : ""),
+    [mainNote, setMainNote] = useState(note ? note.mainNote : ""),
     // NoteInput Component list
-    [notes, setNotes] = useState([]),
+    [subnotes, setSubnotes] = useState([]),
     noteArray = useRef(null),
-    { API, Storage } = useContext(ApiContext);
+    { API, Storage, user } = useContext(ApiContext);
 
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
@@ -139,26 +140,26 @@ function NoteForm(props) {
         </button>
       </div>
       <input
-        className="note-title"
+        className="note-mainNote"
         type="text"
-        defaultValue={title}
-        onChange={e => setTitle(e.target.value)}
-        placeholder="Title (Optional)"
+        defaultValue={mainNote}
+        onChange={e => setMainNote(e.target.value)}
+        placeholder="Main Note"
       />
       <div className="note-array" ref={noteArray}>
-        {notes.map(noteInputComponent => noteInputComponent)}
+        {subnotes.map(noteInputComponent => noteInputComponent)}
       </div>
 
       <button type="button" onClick={addNoteInput}>
         Add Note
       </button>
       {!note && (
-        <button type="submit" onClick={postNote}>
-          Create Note
+        <button type="submit" onClick={prepNote}>
+          Submit
         </button>
       )}
       {note && (
-        <button type="submit" onClick={postNote}>
+        <button type="button" onClick={prepNote}>
           Update Note
         </button>
       )}
@@ -170,7 +171,7 @@ function NoteForm(props) {
     //   console.log(n);
     //   API.put(
     //     "StuddieBuddie",
-    //     `/subjects/${name}/${category}/notes/${noteIndex}`,
+    //     `/subjects/${name}/${category}/subnotes/${noteIndex}`,
     //     {
     //       body: JSON.stringify(n)
     //     }
@@ -180,7 +181,7 @@ function NoteForm(props) {
     //       console.log(em);
     //       let em = JSON.parse(response.errorMessage),
     //         scn = subjectCategoryNotes.slice();
-    //       // scn[noteIndex] = em.data.Attributes.notes[0];
+    //       // scn[noteIndex] = em.data.Attributes.subnotes[0];
     //       if (audioBlob) {
     //         Storage.put(`${name}/${category}/${note.id}`, audioBlob)
     //           .then(res => {
@@ -203,56 +204,54 @@ function NoteForm(props) {
 
   function addNoteInput() {
     // Assigns a 'key' value for Component
-    let key = notes[0] ? notes[notes.length - 1].key + 1 : 0;
-    setNotes([...notes, <NoteInput {...{ key }} />]);
+    let key = subnotes[0] ? subnotes[subnotes.length - 1].key + 1 : 0;
+    setSubnotes([...subnotes, <NoteInput {...{ key }} />]);
   }
 
-  function postNote() {
+  function prepNote() {
     console.log("postNote");
     let noteValues = {
-      title,
-      notes: []
+      username: user.user.username,
+      mainNote: mainNote ? mainNote.trim() : false,
+      subnotes: [],
+      audioNote: audio ? true : false,
+      image: image ? true : false
     };
-
+    // for subNotes
+    console.log("noteValues");
+    console.log(noteValues);
     [...noteArray.current.querySelectorAll(".note")].forEach(noteElement => {
-      noteValues.notes.push(noteElement.value);
+      noteValues.subnotes.push(noteElement.value);
     });
     console.log(note);
-    !note ? submitForm(noteValues) : updateNote(noteValues);
+    !note ? postNote(noteValues) : updateNote(noteValues);
   }
 
-  function submitForm(n) {
+  function postNote(n) {
     API.post("StuddieBuddie", `/subjects/${subjectName}/${categoryName}`, {
       body: JSON.stringify(n)
     })
       .then(response => {
-        console.log("posting note");
+        console.log("response posting note");
         console.log(response);
-        let em = JSON.parse(response.errorMessage),
-          id = em.data.Attributes.notes[notes.length].id;
-        // console.log("parse error");
-        // console.log(em.data.Attributes.notes);
-        // setSubjectCategoryNotes();
-        // console.log("response");
-        // console.log(response);
-        console.log(em);
         setTimeout(function() {
-          if (audioBlob) {
+          if (audio) {
+            console.log("audio");
             // Storage.put(
-            //   `${name}/${category}/${em.data.Attributes.notes.length -
+            //   `${name}/${category}/${em.data.Attributes.subnotes.length -
             //     1}/${id}`,
             //   audioBlob
             // )
             //   .then(res => {
             //     console.log(res);
             //     console.log("storage PUT  complete");
-            //     setSubjectCategoryNotes(em.data.Attributes.notes);
+            //     setSubjectCategoryNotes(em.data.Attributes.subnotes);
             //   })
             //   .catch(err => {
             //     console.log(err);
             //   });
           }
-        }, 5000);
+        }, 1000);
       })
       .catch(error => {
         console.log("ERROR");
@@ -261,9 +260,9 @@ function NoteForm(props) {
   }
 } // End of component
 
-function displayNotes(notesArray, setNotes) {
-  setNotes(notesArray.map((n, i) => <NoteInput key={i} note={n} />));
-}
+// function displayNotes(subnotesArray, setSubnotes) {
+//   setSubnotes(subnotesArray.map((n, i) => <NoteInput key={i} note={n} />));
+// }
 function NoteInput(props) {
   let { note } = props;
   return (
