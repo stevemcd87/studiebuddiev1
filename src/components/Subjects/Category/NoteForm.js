@@ -103,10 +103,7 @@ function NoteForm(props) {
         console.log(response);
         // getCategoryNotes();
         if (audioBlob) {
-          console.log("audioBlob");
-
           if (audioBlob && audioNoteUpdated) {
-            console.log("audio");
             Storage.put(
               `${subjectName}/${categoryName}/AudioNotes/${user.user.username}/${n.pathName}`,
               audioBlob
@@ -152,9 +149,27 @@ function NoteForm(props) {
       body: JSON.stringify(n)
     })
       .then(response => {
-        console.log("response posting note");
+        console.log("update note response");
         console.log(response);
-        getCategoryNotes();
+          if (audioBlob ) {
+            Storage.put(
+              `${subjectName}/${categoryName}/AudioNotes/${user.user.username}/${response.pathName}`,
+              audioBlob
+            )
+              .then(res => {
+                console.log("storage PUT  complete RES");
+                console.log(res);
+                setTimeout(function() {
+                  getCategoryNotes();
+                }, 1500);
+              })
+              .catch(err => {
+                console.log("err");
+                console.log(err);
+              });
+          } else {
+          getCategoryNotes();
+        }
       })
       .catch(error => {
         console.log("ERROR");
