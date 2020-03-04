@@ -78,6 +78,8 @@ function NoteForm(props) {
       image: image ? true : false
     };
     if (note) noteValues.pathName = note.pathName;
+    if (note && note.audioNote && !audioNoteUpdated)
+      noteValues.audioNote = note.audioNote;
     // for subNotes
     console.log("noteValues");
     console.log(noteValues);
@@ -102,8 +104,8 @@ function NoteForm(props) {
         // getCategoryNotes();
         if (audioBlob) {
           console.log("audioBlob");
-          // setTimeout(function() {
-          if (audioBlob ) {
+
+          if (audioBlob && audioNoteUpdated) {
             console.log("audio");
             Storage.put(
               `${subjectName}/${categoryName}/AudioNotes/${user.user.username}/${n.pathName}`,
@@ -112,14 +114,30 @@ function NoteForm(props) {
               .then(res => {
                 console.log("storage PUT  complete RES");
                 console.log(res);
+                setTimeout(function() {
+                  getCategoryNotes();
+                }, 1500);
+              })
+              .catch(err => {
+                console.log("err");
+                console.log(err);
+              });
+          } else if (!audioBlob && audioNoteUpdated && note.audioNote) {
+            console.log("audio");
+            Storage.remove(
+              `${subjectName}/${categoryName}/AudioNotes/${user.user.username}/${n.pathName}`
+            )
+              .then(res => {
+                console.log("storage del  complete RES");
+                console.log(res);
                 getCategoryNotes();
               })
               .catch(err => {
-                console.log('err');
+                console.log("err");
                 console.log(err);
               });
           }
-          // }, 1000);
+
         } else {
           getCategoryNotes();
         }
@@ -136,6 +154,7 @@ function NoteForm(props) {
       .then(response => {
         console.log("response posting note");
         console.log(response);
+        getCategoryNotes();
       })
       .catch(error => {
         console.log("ERROR");

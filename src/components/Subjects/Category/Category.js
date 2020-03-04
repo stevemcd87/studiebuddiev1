@@ -26,6 +26,7 @@ export default function Category() {
   useEffect(() => {
     console.log("category");
     console.log(categoryNotes);
+    setDisplayNoteForm(false);
     // setCategoryNotes(categoryNotes.notes);
   }, [categoryNotes]);
 
@@ -55,7 +56,12 @@ export default function Category() {
           >
             Create Note
           </button>
-          {!displayNoteForm && <NoteForm />}
+          {!displayNoteForm && (
+            <CategoryContext.Provider value={{ getCategoryNotes }}>
+              <NoteForm {...{getCategoryNotes}}/>
+            </CategoryContext.Provider>
+
+          )}
         </Route>
         <Route path={`${path}/test`}>
           <p>Test</p>

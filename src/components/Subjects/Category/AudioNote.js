@@ -75,7 +75,7 @@ export default function AudioNote(props) {
 
       <button
         className="play-audio-button"
-        onClick={playAudio}
+        onClick={playNewAudio}
         disabled={!audio}
       >
         <FontAwesomeIcon icon={faPlay} />
@@ -110,7 +110,7 @@ export default function AudioNote(props) {
     setAudioNoteUpdated(true);
   }
 
-  // function playAudio() {
-  //   audio.play();
-  // }
+  function playNewAudio() {
+    audio.play();
+  }
 } // end of component
