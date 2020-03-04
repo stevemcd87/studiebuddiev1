@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlay,
@@ -6,12 +6,14 @@ import {
   faRecordVinyl,
   faTrash
 } from "@fortawesome/free-solid-svg-icons";
+import ApiContext from "../../../contexts/ApiContext";
 export default function AudioNote(props) {
-  let {audioBlob, setAudioBlob,note} = props,
+  let {audioBlob, setAudioBlob, setAudioNoteUpdated, note } = props,
     [mediaRecorder, setMediaRecorder] = useState(),
     // [audioBlob, setAudioBlob] = useState(),
     [audio, setAudio] = useState(),
-    [recording, setRecording] = useState(false);
+    [recording, setRecording] = useState(false),
+    { Storage } = useContext(ApiContext);
   // for Audio Note componentDidMount
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
@@ -53,7 +55,11 @@ export default function AudioNote(props) {
   return (
     <div className="audio-note-component">
       <h3>Audio Note</h3>
-      {note && note.audioNoteKey && <button onClick={getData}></button>}
+        {note && note.audioNote && (
+          <button onClick={() => playAudio(note.audioNote)}>
+            Play Audio Note
+          </button>
+        )}
       <button disabled={recording} onClick={startRecord}>
         <FontAwesomeIcon icon={faRecordVinyl} />
       </button>
@@ -84,11 +90,13 @@ export default function AudioNote(props) {
     </div>
   );
 
-  function getData() {
-    Storage.get(note.audioNoteKey)
+  function playAudio(s3Key) {
+    // audio.play();
+    console.log(s3Key);
+    Storage.get(s3Key.replace('public/',''))
       .then(res => {
-        console.log("res");
-        console.log(res);
+        console.log("play audio res");
+        console.log(typeof res);
         // setAudioBlob(res);
         new Audio(res).play();
       })
@@ -99,9 +107,10 @@ export default function AudioNote(props) {
 
   function startRecord() {
     setRecording(true);
+    setAudioNoteUpdated(true);
   }
 
-  function playAudio() {
-    audio.play();
-  }
+  // function playAudio() {
+  //   audio.play();
+  // }
 } // end of component

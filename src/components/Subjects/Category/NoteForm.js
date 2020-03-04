@@ -11,6 +11,7 @@ function NoteForm(props) {
     [image, setImage] = useState(),
     [mainNote, setMainNote] = useState(note ? note.mainNote : ""),
     [audioBlob, setAudioBlob] = useState(),
+    [audioNoteUpdated, setAudioNoteUpdated] = useState(false),
     [subnotes, setSubnotes] = useState([]),
     noteArray = useRef(null),
     { getCategoryNotes } = useContext(CategoryContext),
@@ -47,7 +48,7 @@ function NoteForm(props) {
 
   return (
     <div className="note-form">
-      <AudioNote {...{ note, audioBlob, setAudioBlob }} />
+      <AudioNote {...{ note, audioBlob, setAudioBlob, setAudioNoteUpdated }} />
       <input
         className="note-mainNote"
         type="text"
@@ -102,10 +103,10 @@ function NoteForm(props) {
         if (audioBlob) {
           console.log("audioBlob");
           // setTimeout(function() {
-          if (audioBlob) {
+          if (audioBlob ) {
             console.log("audio");
             Storage.put(
-              `${subjectName}/${categoryName}/notes/${user.user.username}/${n.pathName}`,
+              `${subjectName}/${categoryName}/AudioNotes/${user.user.username}/${n.pathName}`,
               audioBlob
             )
               .then(res => {

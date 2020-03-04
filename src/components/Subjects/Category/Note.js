@@ -29,7 +29,7 @@ function Note(props) {
     Storage.get(s3Key.replace('public/',''))
       .then(res => {
         console.log("play audio res");
-        console.log(res);
+        console.log(typeof res);
         // setAudioBlob(res);
         new Audio(res).play();
       })
