@@ -49,6 +49,24 @@ function NoteForm(props) {
     }
   }, [imageFile]);
 
+  useEffect(() => {
+    console.log(imageSrc);
+    if(note && note.image) getImage();
+
+  }, []);
+
+  function getImage(){
+    Storage.get(note.image.replace('public/',''))
+      .then(res => {
+        console.log("image res");
+        console.log(res);
+        setImageSrc(res);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
   function uploadFile() {
     console.log("uploadFile");
     console.log(imageInput);
@@ -141,21 +159,22 @@ function NoteForm(props) {
                 console.log("err");
                 console.log(err);
               });
-          } else if (!audioBlob && audioNoteUpdated && note.audioNote) {
-            console.log("audio");
-            Storage.remove(
-              `${subjectName}/${categoryName}/AudioNotes/${user.user.username}/${n.pathName}`
-            )
-              .then(res => {
-                console.log("storage del  complete RES");
-                console.log(res);
-                getCategoryNotes();
-              })
-              .catch(err => {
-                console.log("err");
-                console.log(err);
-              });
           }
+          // else if (!audioBlob && audioNoteUpdated && note.audioNote) {
+          //   console.log("audio");
+          //   Storage.remove(
+          //     `${subjectName}/${categoryName}/AudioNotes/${user.user.username}/${n.pathName}`
+          //   )
+          //     .then(res => {
+          //       console.log("storage del  complete RES");
+          //       console.log(res);
+          //       getCategoryNotes();
+          //     })
+          //     .catch(err => {
+          //       console.log("err");
+          //       console.log(err);
+          //     });
+          // }
         }
         if(imageFile){
           console.log('image');
