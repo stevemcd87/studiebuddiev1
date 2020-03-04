@@ -26,7 +26,7 @@ function Note(props) {
   function playAudio(s3Key) {
     // audio.play();
     console.log(s3Key);
-    Storage.get(s3Key.replace("public/", ""))
+    Storage.get(s3Key.replace('public/',''))
       .then(res => {
         console.log("play audio res");
         console.log(res);

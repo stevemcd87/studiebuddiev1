@@ -9,7 +9,7 @@ import { Authenticator} from "aws-amplify-react";
 // Amplify.configure(awsconfig);
 // , ChatBot, AmplifyTheme
 Amplify.configure(AmpConfig);
-Storage.configure({ level: "public" });
+// Storage.configure({ level: "public" });
 function App() {
   let [user, setUser] = useState(Auth);
   // let userInput = "book a car";

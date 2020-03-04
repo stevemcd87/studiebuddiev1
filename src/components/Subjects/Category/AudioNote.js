@@ -22,7 +22,6 @@ export default function AudioNote(props) {
         mediaRecorder.removeEventListener("stop", () => {});
       };
     });
-
   }, []);
 
   useEffect(() => {

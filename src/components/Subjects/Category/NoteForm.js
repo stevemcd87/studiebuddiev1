@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
-import AudioNote from './AudioNote';
+import AudioNote from "./AudioNote";
 import { useParams } from "react-router-dom";
 import "./NoteForm.css";
 import ApiContext from "../../../contexts/ApiContext";
@@ -16,27 +16,22 @@ function NoteForm(props) {
     { getCategoryNotes } = useContext(CategoryContext),
     { API, Storage, user } = useContext(ApiContext);
 
-
-
-
   useEffect(() => {
     console.log("note");
     console.log(note);
   }, [note]);
 
-// for SubNotes if updating note
+  // for SubNotes if updating note
   useEffect(() => {
-    if (note && note.subnotes){
+    if (note && note.subnotes) {
       let sn = [];
-      note.subnotes.forEach((v)=>{
+      note.subnotes.forEach(v => {
         let key = sn[0] ? sn[sn.length - 1].key + 1 : 0;
-        sn.push(<NoteInput note={v}{...{ key } } />);
-      })
+        sn.push(<NoteInput note={v} {...{ key }} />);
+      });
       setSubnotes(sn);
     }
-
   }, []);
-
 
   function uploadFile(evt) {
     console.log("uploadFile");
@@ -50,10 +45,9 @@ function NoteForm(props) {
     //   });
   }
 
-
   return (
     <div className="note-form">
-      <AudioNote {...{note,audioBlob, setAudioBlob}}/>
+      <AudioNote {...{ note, audioBlob, setAudioBlob }} />
       <input
         className="note-mainNote"
         type="text"
@@ -94,15 +88,44 @@ function NoteForm(props) {
   }
 
   function updateNote(n) {
-    API.put("StuddieBuddie", `/subjects/${subjectName}/${categoryName}/notes/${n.pathName}`, {
-      body: JSON.stringify(n)
-    }).then(response => {
-      console.log('update note response');
-      console.log(response);
-      getCategoryNotes();
-    }).catch(error => {
-        console.log(error.response)
-    });
+    API.put(
+      "StuddieBuddie",
+      `/subjects/${subjectName}/${categoryName}/notes/${n.pathName}`,
+      {
+        body: JSON.stringify(n)
+      }
+    )
+      .then(response => {
+        console.log("update note response");
+        console.log(response);
+        // getCategoryNotes();
+        if (audioBlob) {
+          console.log("audioBlob");
+          // setTimeout(function() {
+          if (audioBlob) {
+            console.log("audio");
+            Storage.put(
+              `${subjectName}/${categoryName}/notes/${user.user.username}/${n.pathName}`,
+              audioBlob
+            )
+              .then(res => {
+                console.log("storage PUT  complete RES");
+                console.log(res);
+                getCategoryNotes();
+              })
+              .catch(err => {
+                console.log('err');
+                console.log(err);
+              });
+          }
+          // }, 1000);
+        } else {
+          getCategoryNotes();
+        }
+      })
+      .catch(error => {
+        console.log(error.response);
+      });
   }
 
   function postNote(n) {
@@ -112,24 +135,6 @@ function NoteForm(props) {
       .then(response => {
         console.log("response posting note");
         console.log(response);
-        setTimeout(function() {
-          if (audioBlob) {
-            console.log("audio");
-            // Storage.put(
-            //   `${name}/${category}/${em.data.Attributes.subnotes.length -
-            //     1}/${id}`,
-            //   audioBlob
-            // )
-            //   .then(res => {
-            //     console.log(res);
-            //     console.log("storage PUT  complete");
-            //     setSubjectCategoryNotes(em.data.Attributes.subnotes);
-            //   })
-            //   .catch(err => {
-            //     console.log(err);
-            //   });
-          }
-        }, 1000);
       })
       .catch(error => {
         console.log("ERROR");
@@ -142,8 +147,6 @@ function NoteForm(props) {
     let key = subnotes[0] ? subnotes[subnotes.length - 1].key + 1 : 0;
     setSubnotes([...subnotes, <NoteInput {...{ key }} />]);
   }
-
-
 } // End of component
 function NoteInput(props) {
   let { note } = props;
@@ -156,6 +159,5 @@ function NoteInput(props) {
 // function displayNotes(subnotesArray, setSubnotes) {
 //   setSubnotes(subnotesArray.map((n, i) => <NoteInput key={i} note={n} />));
 // }
-
 
 export default NoteForm;
