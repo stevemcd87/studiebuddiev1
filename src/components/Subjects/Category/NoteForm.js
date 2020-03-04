@@ -11,6 +11,7 @@ function NoteForm(props) {
     imageInput = useRef(null),
     [imageSrc, setImageSrc] = useState(),
     [imageFile, setImageFile] = useState(),
+    [imageUpdated, setImageUpdated] = useState(false),
     [mainNote, setMainNote] = useState(note ? note.mainNote : ""),
     [audioBlob, setAudioBlob] = useState(),
     [audioNoteUpdated, setAudioNoteUpdated] = useState(false),
@@ -23,6 +24,11 @@ function NoteForm(props) {
     console.log("image file");
     console.log(imageFile);
   }, [imageFile]);
+
+  useEffect(() => {
+    console.log("imageUpdated");
+    console.log(imageUpdated);
+  }, [imageUpdated]);
 
   // for SubNotes if updating note
   useEffect(() => {
@@ -43,6 +49,7 @@ function NoteForm(props) {
       let imageUrl = URL.createObjectURL(imageFile);
       //   console.log('imageBlob');
       //   console.log(imageBlob);
+      setImageUpdated(true);
       setImageSrc(imageUrl);
       console.log("imageUrl");
       console.log(imageUrl);
@@ -67,18 +74,6 @@ function NoteForm(props) {
       });
   }
 
-  function uploadFile() {
-    console.log("uploadFile");
-    console.log(imageInput);
-    // Storage.put(
-    //   `${subjectName}/${categoryName}/${note.id}/noteIndex`,
-    //   audioBlob
-    // )
-    //   .then(res => console.log(res))
-    //   .catch(err => {
-    //     console.error(err);
-    //   });
-  }
 
   return (
     <div className="note-form">
@@ -120,6 +115,9 @@ function NoteForm(props) {
     if (note) noteValues.pathName = note.pathName;
     if (note && note.audioNote && !audioNoteUpdated)
       noteValues.audioNote = note.audioNote;
+
+    if (note && note.image && !imageUpdated)
+      noteValues.image = note.image;
     // for subNotes
     console.log("noteValues");
     console.log(noteValues);
@@ -142,7 +140,7 @@ function NoteForm(props) {
         console.log("update note response");
         console.log(response);
         // getCategoryNotes();
-        if (audioBlob) {
+        // if (audioBlob) {
           if (audioBlob && audioNoteUpdated) {
             Storage.put(
               `${subjectName}/${categoryName}/AudioNotes/${user.user.username}/${n.pathName}`,
@@ -175,8 +173,8 @@ function NoteForm(props) {
           //       console.log(err);
           //     });
           // }
-        }
-        if(imageFile){
+        // }
+        if(imageFile && imageUpdated){
           console.log('image');
           Storage.put(
             `${subjectName}/${categoryName}/Image/${user.user.username}/${n.pathName}`,

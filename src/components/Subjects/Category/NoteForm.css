@@ -34,4 +34,9 @@
 img {
   width: 100px;
   height: 100px;
+  display: block;
+}
+
+.note-detail > button {
+  display:block
 }

@@ -3,6 +3,9 @@ import NoteForm from "./NoteForm";
 import { useParams } from "react-router-dom";
 import ApiContext from "../../../contexts/ApiContext";
 import CategoryContext from "../../../contexts/CategoryContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {faPlay} from "@fortawesome/free-solid-svg-icons";
+
 function Note(props) {
   let { note } = props,
     { subjectName, categoryName } = useParams(),
@@ -65,13 +68,14 @@ function Note(props) {
       {displayForm && <NoteForm {...{ note }} />}
       {!displayForm && (
         <div className="note-detail">
-          {note.image && (
-            <img src={imageSrc} />
-          )}
+
           {note.audioNote && (
             <button onClick={() => playAudio(note.audioNote)}>
-              Play Audio Note
+              <FontAwesomeIcon icon={faPlay} />
             </button>
+          )}
+          {note.image && (
+            <img src={imageSrc} />
           )}
           {note.mainNote && <p>{note.mainNote}</p>}
           {note.subnotes && note.subnotes.map((n, i) => <p key={n + i}>{n}</p>)}
