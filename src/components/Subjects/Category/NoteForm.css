@@ -30,3 +30,8 @@
 .audio-note {
   padding: 1em;
 }
+
+img {
+  width: 100px;
+  height: 100px;
+}

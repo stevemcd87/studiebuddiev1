@@ -36,19 +36,18 @@ function NoteForm(props) {
     }
   }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log(imageFile);
     // imageBlob = new Blob(imageFile),
     if (imageFile) {
       let imageUrl = URL.createObjectURL(imageFile);
-        //   console.log('imageBlob');
-        //   console.log(imageBlob);
-        setImageSrc(imageUrl);
-          console.log('imageUrl');
-          console.log(imageUrl);
+      //   console.log('imageBlob');
+      //   console.log(imageBlob);
+      setImageSrc(imageUrl);
+      console.log("imageUrl");
+      console.log(imageUrl);
     }
-
-  },[imageFile])
+  }, [imageFile]);
 
   function uploadFile() {
     console.log("uploadFile");
@@ -66,8 +65,12 @@ function NoteForm(props) {
   return (
     <div className="note-form">
       <AudioNote {...{ note, audioBlob, setAudioBlob, setAudioNoteUpdated }} />
-    <input type="file" onChange={(e)=>setImageFile(e.target.files["0"])} ref={imageInput} />
-  {imageSrc && <img src={imageSrc} />}
+      <input
+        type="file"
+        onChange={e => setImageFile(e.target.files["0"])}
+        ref={imageInput}
+      />
+      {imageSrc && <img src={imageSrc} />}
       <input
         className="note-mainNote"
         type="text"
@@ -128,7 +131,7 @@ function NoteForm(props) {
               audioBlob
             )
               .then(res => {
-                console.log("storage PUT  complete RES");
+                console.log("audio  complete RES");
                 console.log(res);
                 setTimeout(function() {
                   getCategoryNotes();
@@ -153,8 +156,26 @@ function NoteForm(props) {
                 console.log(err);
               });
           }
-
-        } else {
+        }
+        if(imageFile){
+          console.log('image');
+          Storage.put(
+            `${subjectName}/${categoryName}/Image/${user.user.username}/${n.pathName}`,
+            imageFile
+          )
+            .then(res => {
+              console.log("storage PUT  complete RES");
+              console.log(res);
+              setTimeout(function() {
+                getCategoryNotes();
+              }, 1500);
+            })
+            .catch(err => {
+              console.log("err");
+              console.log(err);
+            });
+        }
+         if (!imageFile && !audioBlob){
           getCategoryNotes();
         }
       })
@@ -170,11 +191,11 @@ function NoteForm(props) {
       .then(response => {
         console.log("update note response");
         console.log(response);
-          if (audioBlob ) {
-            Storage.put(
-              `${subjectName}/${categoryName}/AudioNotes/${user.user.username}/${response.pathName}`,
-              audioBlob
-            )
+        if (audioBlob) {
+          Storage.put(
+            `${subjectName}/${categoryName}/AudioNotes/${user.user.username}/${response.pathName}`,
+            audioBlob
+          )
             .then(res => {
               console.log("storage PUT  complete RES");
               console.log(res);
@@ -186,9 +207,29 @@ function NoteForm(props) {
               console.log("err");
               console.log(err);
             });
-          } else {
-          getCategoryNotes();
         }
+
+        if(imageFile){
+          Storage.put(
+            `${subjectName}/${categoryName}/Image/${user.user.username}/${response.pathName}`,
+            imageFile
+          )
+            .then(res => {
+              console.log("storage PUT  complete RES");
+              console.log(res);
+              setTimeout(function() {
+                getCategoryNotes();
+              }, 1500);
+            })
+            .catch(err => {
+              console.log("err");
+              console.log(err);
+            });
+        }
+
+        if (!imageFile && !audioBlob){
+         getCategoryNotes();
+       }
       })
       .catch(error => {
         console.log("ERROR");

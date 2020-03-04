@@ -6,6 +6,7 @@ import CategoryContext from "../../../contexts/CategoryContext";
 function Note(props) {
   let { note } = props,
     { subjectName, categoryName } = useParams(),
+    [imageSrc, setImageSrc] = useState(),
     [mediaRecorder, setMediaRecorder] = useState(),
     [audioBlob, setAudioBlob] = useState(),
     [audio, setAudio] = useState(),
@@ -15,13 +16,26 @@ function Note(props) {
 
   useEffect(() => {
     setDisplayForm(false);
-    console.log('note');
-    console.log(note);
   }, [categoryNotes]);
 
-  // useEffect(() => {
-  //   console.log(mediaRecorder);
-  // }, [mediaRecorder]);
+  useEffect(() => {
+    console.log(imageSrc);
+    if(note.image) getImage();
+
+  }, []);
+
+  function getImage(){
+    Storage.get(note.image.replace('public/',''))
+      .then(res => {
+        console.log("image res");
+        console.log(res);
+        setImageSrc(res);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
 
   function playAudio(s3Key) {
     // audio.play();
@@ -51,6 +65,9 @@ function Note(props) {
       {displayForm && <NoteForm {...{ note }} />}
       {!displayForm && (
         <div className="note-detail">
+          {note.image && (
+            <img src={imageSrc} />
+          )}
           {note.audioNote && (
             <button onClick={() => playAudio(note.audioNote)}>
               Play Audio Note
