@@ -8,7 +8,9 @@ import CategoryContext from "../../../contexts/CategoryContext";
 function NoteForm(props) {
   let { subjectName, categoryName } = useParams(),
     { note } = props,
-    [image, setImage] = useState(),
+    imageInput = useRef(null),
+    [imageSrc, setImageSrc] = useState(),
+    [imageFile, setImageFile] = useState(),
     [mainNote, setMainNote] = useState(note ? note.mainNote : ""),
     [audioBlob, setAudioBlob] = useState(),
     [audioNoteUpdated, setAudioNoteUpdated] = useState(false),
@@ -18,9 +20,9 @@ function NoteForm(props) {
     { API, Storage, user } = useContext(ApiContext);
 
   useEffect(() => {
-    console.log("note");
-    console.log(note);
-  }, [note]);
+    console.log("image file");
+    console.log(imageFile);
+  }, [imageFile]);
 
   // for SubNotes if updating note
   useEffect(() => {
@@ -34,8 +36,23 @@ function NoteForm(props) {
     }
   }, []);
 
-  function uploadFile(evt) {
+  useEffect(()=>{
+    console.log(imageFile);
+    // imageBlob = new Blob(imageFile),
+    if (imageFile) {
+      let imageUrl = URL.createObjectURL(imageFile);
+        //   console.log('imageBlob');
+        //   console.log(imageBlob);
+        setImageSrc(imageUrl);
+          console.log('imageUrl');
+          console.log(imageUrl);
+    }
+
+  },[imageFile])
+
+  function uploadFile() {
     console.log("uploadFile");
+    console.log(imageInput);
     // Storage.put(
     //   `${subjectName}/${categoryName}/${note.id}/noteIndex`,
     //   audioBlob
@@ -49,6 +66,8 @@ function NoteForm(props) {
   return (
     <div className="note-form">
       <AudioNote {...{ note, audioBlob, setAudioBlob, setAudioNoteUpdated }} />
+    <input type="file" onChange={(e)=>setImageFile(e.target.files["0"])} ref={imageInput} />
+  {imageSrc && <img src={imageSrc} />}
       <input
         className="note-mainNote"
         type="text"
@@ -75,7 +94,7 @@ function NoteForm(props) {
       mainNote: mainNote ? mainNote.trim() : false,
       subnotes: [],
       audioNote: audioBlob ? true : false,
-      image: image ? true : false
+      image: imageFile ? true : false
     };
     if (note) noteValues.pathName = note.pathName;
     if (note && note.audioNote && !audioNoteUpdated)
@@ -156,17 +175,17 @@ function NoteForm(props) {
               `${subjectName}/${categoryName}/AudioNotes/${user.user.username}/${response.pathName}`,
               audioBlob
             )
-              .then(res => {
-                console.log("storage PUT  complete RES");
-                console.log(res);
-                setTimeout(function() {
-                  getCategoryNotes();
-                }, 1500);
-              })
-              .catch(err => {
-                console.log("err");
-                console.log(err);
-              });
+            .then(res => {
+              console.log("storage PUT  complete RES");
+              console.log(res);
+              setTimeout(function() {
+                getCategoryNotes();
+              }, 1500);
+            })
+            .catch(err => {
+              console.log("err");
+              console.log(err);
+            });
           } else {
           getCategoryNotes();
         }
