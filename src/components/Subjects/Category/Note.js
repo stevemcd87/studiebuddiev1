@@ -7,12 +7,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {faPlay} from "@fortawesome/free-solid-svg-icons";
 
 function Note(props) {
-  let { note } = props,
+  let { note , active, nextAutoPlayIndex} = props,
     { subjectName, categoryName } = useParams(),
     [imageSrc, setImageSrc] = useState(),
     [mediaRecorder, setMediaRecorder] = useState(),
     [audioBlob, setAudioBlob] = useState(),
     [audio, setAudio] = useState(),
+    [finishedPlayingAudio, setFinishedPlayingAudio] = useState(),
     [displayForm, setDisplayForm] = useState(false),
     { categoryNotes, getCategoryNotes } = useContext(CategoryContext),
     { API, Storage, user } = useContext(ApiContext);
@@ -21,11 +22,19 @@ function Note(props) {
     setDisplayForm(false);
   }, [categoryNotes]);
 
+
+// for Note Image
   useEffect(() => {
     console.log(imageSrc);
     if(note.image) getImage();
-
   }, []);
+
+  // for active prop
+    useEffect(() => {
+      if (active) playAudio();
+    }, [active]);
+
+
 
   function getImage(){
     Storage.get(note.image.replace('public/',''))
@@ -40,25 +49,37 @@ function Note(props) {
   }
 
 
-  function playAudio(s3Key) {
-    // audio.play();
-    console.log(s3Key);
-    Storage.get(s3Key.replace('public/',''))
-      .then(res => {
-        console.log("play audio res");
-        console.log(typeof res);
-        // setAudioBlob(res);
-        new Audio(res).play();
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  }
+  function playAudio() {
+    if (note && note.audioNote) {
+      Storage.get(note.audioNote.replace('public/',''))
+        .then(res => {
+          console.log("play audio res");
+          let a = new Audio(res)
+          console.log(a);
+          a.play();
+          a.addEventListener("ended", function(){
+            setTimeout(()=>{
+              nextAutoPlayIndex();
+            },1500)
+             console.log("ended");
+             a.removeEventListener("ended",()=>{})
+          });
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    } else {
+      if(active) {
+        setTimeout(()=>{
+          nextAutoPlayIndex();
+        },1500)
+      } else {
+        alert('no Audio Note');
+      }
 
-  // <div className="test">
-  //   <p> Pick a file(AUDIO)</p>
-  //   <input type="file" onChange={uploadFile} />
-  // </div>
+    }
+
+  }
 
   return (
     <div className="note">
@@ -70,7 +91,7 @@ function Note(props) {
         <div className="note-detail">
 
           {note.audioNote && (
-            <button onClick={() => playAudio(note.audioNote)}>
+            <button onClick={() => playAudio()}>
               <FontAwesomeIcon icon={faPlay} />
             </button>
           )}
