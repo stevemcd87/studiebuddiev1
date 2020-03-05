@@ -92,9 +92,7 @@ function SubjectDetail() {
             urlName: urlName
           };
         });
-        console.log(c);
         setCategories(c);
-        // return response.data[0];
       })
       .catch(error => {
         console.log("er");

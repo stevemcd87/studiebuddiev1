@@ -8,14 +8,9 @@ import SubjectForm from "./SubjectForm";
 function Subject(props) {
   let { API, user } = useContext(ApiContext),
     { subject, getSubjects } = useContext(SubjectContext),
-    // { subject, getSubjects, setSubjects } = props,
     [displayUpdateForm, setDisplayUpdateForm] = useState(false),
     [displayDesc, setDisplayDesc] = useState(false);
-  // <span>
-  //
-  //     {subject.navName} - {subject.category}{" "}
-  //
-  // </span>
+
   useEffect(() => {
     setDisplayUpdateForm(false);
   }, [subject]);
@@ -45,6 +40,7 @@ function Subject(props) {
   );
 
   function deleteSubject() {
+    // TODO: delete all items for subject
     console.log("deleteSubject");
     API.del("StuddieBuddie", "/subjects", {
       body: JSON.stringify({

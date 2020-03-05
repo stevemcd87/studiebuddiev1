@@ -1,17 +1,34 @@
-import React, { useContext } from "react";
+import React, { useState, useContext } from "react";
 import CategoryContext from "../../../../contexts/CategoryContext";
 import Question from "./Question";
 // import Note from "./NoteForm";
 
 export default function Questions(props) {
-  let { categoryNotes } = useContext(CategoryContext);
-
+  let [questionIndex, setQuestionIndex] = useState(),
+    { categoryQuestions } = useContext(CategoryContext);
 
   return (
     <div className="questions-component">
       <h2>Questions</h2>
-      <Question />
+      {categoryQuestions.map((question, ind) => {
+        return (
+          <Question
+            key={question.pathName}
+            question={question}
+            active={questionIndex === ind ? true : false}
+            nextQuestion={nextQuestion}
+          />
+        );
+      })}
     </div>
   );
 
+  function nextQuestion() {
+    console.log("nextQuestion");
+    if (questionIndex < categoryQuestions.length - 1) {
+      setQuestionIndex(questionIndex + 1);
+    } else {
+      console.log("finished");
+    }
+  }
 }

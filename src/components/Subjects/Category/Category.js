@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext } from "react";
 import Notes from "./Notes";
 import CategoryContext from "../../../contexts/CategoryContext";
 import ApiContext from "../../../contexts/ApiContext";
-import NoteForm from "./NoteForm";
 import Questions from "./Questions/Questions";
 
 import {
@@ -18,18 +17,12 @@ export default function Category() {
   let { path, url } = useRouteMatch(),
     { subjectName, categoryName } = useParams(),
     [categoryNotes, setCategoryNotes] = useState([]),
-    [displayNoteForm, setDisplayNoteForm] = useState(false),
     { API, user } = useContext(ApiContext);
   useEffect(() => {
     getCategoryNotes();
   }, []);
 
-  useEffect(() => {
-    console.log("category");
-    console.log(categoryNotes);
-    setDisplayNoteForm(false);
-    // setCategoryNotes(categoryNotes.notes);
-  }, [categoryNotes]);
+
 
 
   return (
@@ -48,18 +41,7 @@ export default function Category() {
           <CategoryContext.Provider value={{ categoryNotes, getCategoryNotes }}>
             <Notes />
           </CategoryContext.Provider>
-          <button
-            type="button "
-            onClick={() => setDisplayNoteForm(!displayNoteForm)}
-          >
-            Create Note
-          </button>
-          {!displayNoteForm && (
-            <CategoryContext.Provider value={{ getCategoryNotes }}>
-              <NoteForm {...{getCategoryNotes}}/>
-            </CategoryContext.Provider>
 
-          )}
         </Route>
         <Route path={`${path}/test`}>
           <CategoryContext.Provider value={{ getCategoryNotes }}>
@@ -69,6 +51,7 @@ export default function Category() {
       </Switch>
     </div>
   );
+
   function getCategoryNotes() {
     console.log("GET Subjectcategory");
     API.get("StuddieBuddie", `/subjects/${subjectName}/${categoryName}`, {
@@ -85,4 +68,21 @@ export default function Category() {
         console.error(error);
       });
   }
+
+  // function getCategoryQuestions() {
+  //   console.log("GET Subjectcategory");
+  //   API.get("StuddieBuddie", `/subjects/${subjectName}/${categoryName}/questions`, {
+  //     queryStringParameters: {
+  //       username: user.user.username
+  //     }
+  //   })
+  //     .then(response => {
+  //       console.log("GET Category response");
+  //       console.log(response);
+  //       setCategoryNotes(response);
+  //     })
+  //     .catch(error => {
+  //       console.error(error);
+  //     });
+  // }
 } // end of component

@@ -39,6 +39,7 @@ function Subjects(props) {
       )}
     </div>
   );
+
   function getSubjects() {
     console.log("GET subjects");
     API.get("StuddieBuddie", "/subjects", { response: true })

@@ -2,7 +2,9 @@ import React from "react";
 
 const CategoryContext = React.createContext({
   categoryNotes: [],
-  getCategortNotes: () => {}
+  getCategortNotes: () => {},
+  categoryQuestions: [],
+  getCategortQuestions: () => {},
 });
 
 export default CategoryContext;
