@@ -3,6 +3,7 @@ import Notes from "./Notes";
 import CategoryContext from "../../../contexts/CategoryContext";
 import ApiContext from "../../../contexts/ApiContext";
 import NoteForm from "./NoteForm";
+import Questions from "./Questions/Questions";
 
 import {
   BrowserRouter as Router,
@@ -30,10 +31,7 @@ export default function Category() {
     // setCategoryNotes(categoryNotes.notes);
   }, [categoryNotes]);
 
-  // {categoryNotes && (
-  // //   />
-  // )}
-  //
+
   return (
     <div>
       <h2>{categoryName.replace("-", " ")}</h2>
@@ -64,7 +62,9 @@ export default function Category() {
           )}
         </Route>
         <Route path={`${path}/test`}>
-          <p>Test</p>
+          <CategoryContext.Provider value={{ getCategoryNotes }}>
+            <Questions />
+          </CategoryContext.Provider>
         </Route>
       </Switch>
     </div>
