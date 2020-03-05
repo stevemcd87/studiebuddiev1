@@ -14,9 +14,9 @@ function Notes(props) {
     console.log(autoPlay);
   }, [autoPlay]);
 
-  useEffect(() => {
-    setDisplayNoteForm(false);
-  }, [categoryNotes]);
+  // useEffect(() => {
+  //   setDisplayNoteForm(false);
+  // }, [categoryNotes]);
   return (
     <div className="notes-component">
       <button type="button" onClick={() => setAutoPlay(!autoPlay)}>

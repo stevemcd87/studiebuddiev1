@@ -17,9 +17,11 @@ export default function Category() {
   let { path, url } = useRouteMatch(),
     { subjectName, categoryName } = useParams(),
     [categoryNotes, setCategoryNotes] = useState([]),
+    [categoryQuestions, setCategoryQuestions] = useState([]),
     { API, user } = useContext(ApiContext);
   useEffect(() => {
     getCategoryNotes();
+    getCategoryQuestions();
   }, []);
 
 
@@ -44,7 +46,7 @@ export default function Category() {
 
         </Route>
         <Route path={`${path}/test`}>
-          <CategoryContext.Provider value={{ getCategoryNotes }}>
+          <CategoryContext.Provider value={{ categoryQuestions,getCategoryQuestions }}>
             <Questions />
           </CategoryContext.Provider>
         </Route>
@@ -69,20 +71,21 @@ export default function Category() {
       });
   }
 
-  // function getCategoryQuestions() {
-  //   console.log("GET Subjectcategory");
-  //   API.get("StuddieBuddie", `/subjects/${subjectName}/${categoryName}/questions`, {
-  //     queryStringParameters: {
-  //       username: user.user.username
-  //     }
-  //   })
-  //     .then(response => {
-  //       console.log("GET Category response");
-  //       console.log(response);
-  //       setCategoryNotes(response);
-  //     })
-  //     .catch(error => {
-  //       console.error(error);
-  //     });
-  // }
+  function getCategoryQuestions() {
+    console.log("GET getCategoryQuestions");
+    API.get("StuddieBuddie", `/subjects/${subjectName}/${categoryName}/questions`, {
+      queryStringParameters: {
+        username: user.user.username
+      }
+    })
+      .then(response => {
+        console.log("GET Category question response");
+        console.log(response);
+        // setCategoryQuestions(response);
+      })
+      .catch(error => {
+        console.error(error);
+      })
+
+  }
 } // end of component
