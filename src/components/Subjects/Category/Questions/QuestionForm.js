@@ -14,15 +14,18 @@ export default function QuestionForm(props) {
     [imageUpdated, setImageUpdated] = useState(false),
     [question, setQuestion] = useState(questionObject ? questionObject.question : ""),
     [answerOptions, setAnswerOptions] = useState(questionObject ? questionObject.answerOptions : []),
+    [answer, setAnswer] = useState(questionObject ? questionObject.answer : ""),
     answerOptionsRef = useRef(null),
     { getCategoryQuestions } = useContext(CategoryContext),
     { API, Storage, user } = useContext(ApiContext);
 
 
+// get image for updates
 useEffect(() => {
   if(questionObject && questionObject.image) getImage();
 }, []);
-  // for answerOptions if updating questionObject
+
+  // get answerOptions for updates
   useEffect(() => {
     if (questionObject && questionObject.answerOptions) {
       let ao = [];
@@ -34,6 +37,8 @@ useEffect(() => {
     }
   }, []);
 
+
+// when user uploads file
   useEffect(() => {
     if (imageFile) {
       let imageUrl = URL.createObjectURL(imageFile);
@@ -43,11 +48,7 @@ useEffect(() => {
   }, [imageFile]);
 
 
-
-
-
-//
-  function getImage(){
+  function getImage() {
     console.log('get Image question');
     Storage.get(questionObject.image.replace('public/',''))
       .then(res => {
@@ -75,7 +76,14 @@ useEffect(() => {
         onChange={e => setQuestion(e.target.value)}
         placeholder="Question"
       />
-      <div className="note-array" ref={answerOptionsRef}>
+      <input
+        className="answer-input"
+        type="text"
+        defaultValue={answer}
+        onChange={e => setAnswer(e.target.value)}
+        placeholder="Answer"
+      />
+    <div className="question-array" ref={answerOptionsRef}>
         {answerOptions.map(questionInputComponent => questionInputComponent)}
       </div>
       <button type="button" onClick={addAnswerOptionInput}>
@@ -87,13 +95,32 @@ useEffect(() => {
     </div>
   );
 
+  function formValidation (qv){
+    if (
+      qv.question.length < 1 ||
+      qv.answer.length < 1 ||
+      !answerOptionsValid()
+    ) {
+      return false
+    } else {
+      return true
+    }
+  }
+
+  function answerOptionsValid(){
+    return [...answerOptionsRef.current.querySelectorAll(".question")].every(questionElement => {
+      return questionElement.value.trim().length > 0
+    });
+  }
+
   function prepQuestion() {
     console.log("prepQuestion");
     let questionValues = {
       username: user.user.username,
-      question: question ? question.trim() : false,
+      question: question.trim(),
       answerOptions: [],
-      image: imageFile ? true : false
+      image: imageFile ? true : false,
+      answer: answer.trim()
     };
     // adds pathName to questionVAlues if there is one
     console.log('imageUpdated');
@@ -106,7 +133,7 @@ useEffect(() => {
       console.log(questionValues);
       // pushes all answerOptions into the questionValues.answerOptions
     [...answerOptionsRef.current.querySelectorAll(".question")].forEach(questionElement => {
-      questionValues.answerOptions.push(questionElement.value);
+      questionValues.answerOptions.push(questionElement.value.trim());
     });
     !questionObject ? postQuestion(questionValues) : updateQuestion(questionValues);
   }
