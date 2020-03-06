@@ -21,7 +21,6 @@ export default function Question(props) {
 
       // for Question Image
       useEffect(() => {
-        console.log(imageSrc);
         if (question.image) getImage();
       }, []);
 
@@ -66,7 +65,7 @@ export default function Question(props) {
         console.log("deleteQuestion");
         API.del(
           "StuddieBuddie",
-          `/subjects/${subjectName}/${categoryName}/questions/${q.pathName}`,
+          `/subjects/${subjectName}/${categoryName}/questions/`,
           {
             body: JSON.stringify({
               username: user.user.username,
