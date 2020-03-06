@@ -81,7 +81,7 @@ export default function Category() {
       .then(response => {
         console.log("GET Category question response");
         console.log(response);
-        // setCategoryQuestions(response);
+        setCategoryQuestions(response);
       })
       .catch(error => {
         console.error(error);

@@ -3,12 +3,20 @@ import CategoryContext from "../../../../contexts/CategoryContext";
 import Question from "./Question";
 import QuestionForm from "./QuestionForm";
 
+import "./Questions.css";
+
 export default function Questions(props) {
   let [questionIndex, setQuestionIndex] = useState(),
       [displayForm, setDisplayForm] = useState(false),
-    { categoryQuestions } = useContext(CategoryContext);
+    { categoryQuestions, getCategoryQuestions } = useContext(CategoryContext);
 
+useEffect(()=>{
+  // if (categoryQuestions.length === 0) getCategoryQuestions();
+},[])
 
+useEffect(()=>{
+  console.log(categoryQuestions);
+},[categoryQuestions])
 
   return (
     <div className="questions-component">

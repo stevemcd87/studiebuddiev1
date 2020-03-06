@@ -30,6 +30,23 @@ export default function Question(props) {
   return (
     <div className="questions-component">
       <h2>Question</h2>
+          <span className="delete-question" onClick={() => deleteQuestion(question)}>
+            X
+          </span>
+          {displayForm && <QuestionForm {...{ question }} />}
+          {!displayForm && (
+            <div className="question-detail">
+              {question.image && <img src={imageSrc} />}
+              <p>{question.question}</p>
+              {question.answerOptions.map((v, i) => <p key={v + i}>{v}</p>)}
+              <span
+                className="edit-question"
+                onClick={() => setDisplayForm(!displayForm)}
+              >
+                Edit Question
+              </span>
+            </div>
+          )}
     </div>
   );
 
@@ -70,32 +87,7 @@ export default function Question(props) {
 } // end of component
 
 //
-//   return (
-//     <div className="note" ref={noteDiv}>
-//       <span className="delete-note" onClick={() => deleteQuestion(note)}>
-//         X
-//       </span>
-//       {displayForm && <QuestionForm {...{ note }} />}
-//       {!displayForm && (
-//         <div className="note-detail">
-//           {note.audioQuestion && (
-//             <button onClick={() => playAudio()}>
-//               <FontAwesomeIcon icon={faPlay} />
-//             </button>
-//           )}
-//           {note.image && <img src={imageSrc} />}
-//           {note.mainQuestion && <p>{note.mainQuestion}</p>}
-//           {note.subnotes && note.subnotes.map((n, i) => <p key={n + i}>{n}</p>)}
-//           <span
-//             className="edit-note"
-//             onClick={() => setDisplayForm(!displayForm)}
-//           >
-//             Edit Question
-//           </span>
-//         </div>
-//       )}
-//     </div>
-//   );
+
 //
 
 //
