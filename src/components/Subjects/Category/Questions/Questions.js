@@ -20,7 +20,6 @@ useEffect(()=>{
 
   return (
     <div className="questions-component">
-      <h2>Questions</h2>
       {!displayForm && (
         <button
           type="button "

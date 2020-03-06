@@ -28,11 +28,10 @@ export default function Question(props) {
 
   return (
     <div className="questions-component">
-      <h2>Question</h2>
           <span className="delete-question" onClick={() => deleteQuestion(question)}>
             X
           </span>
-          {displayForm && <QuestionForm {...{ question }} />}
+          {displayForm && <QuestionForm  questionObject={question} />}
           {!displayForm && (
             <div className="question-detail">
               {question.image && <img src={imageSrc} />}
@@ -50,15 +49,15 @@ export default function Question(props) {
   );
 
     function getImage() {
-      // Storage.get(note.image.replace("public/", ""))
-      //   .then(res => {
-      //     console.log("image res");
-      //     console.log(res);
-      //     setImageSrc(res);
-      //   })
-      //   .catch(err => {
-      //     console.log(err);
-      //   });
+      Storage.get(question.image.replace("public/", ""))
+        .then(res => {
+          console.log("image res");
+          console.log(res);
+          setImageSrc(res);
+        })
+        .catch(err => {
+          console.log(err);
+        });
     }
 
       function deleteQuestion(q) {
@@ -83,10 +82,4 @@ export default function Question(props) {
           });
       }
 
-} // end of component
-
-//
-
-//
-
-//
+}

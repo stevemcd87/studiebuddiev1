@@ -13,7 +13,7 @@ export default function QuestionForm(props) {
     [imageFile, setImageFile] = useState(),
     [imageUpdated, setImageUpdated] = useState(false),
     [question, setQuestion] = useState(questionObject ? questionObject.question : ""),
-    [answerOptions, setAnswerOptions] = useState([]),
+    [answerOptions, setAnswerOptions] = useState(questionObject ? questionObject.answerOptions : []),
     answerOptionsRef = useRef(null),
     { getCategoryQuestions } = useContext(CategoryContext),
     { API, Storage, user } = useContext(ApiContext);
@@ -26,9 +26,9 @@ useEffect(() => {
   useEffect(() => {
     if (questionObject && questionObject.answerOptions) {
       let ao = [];
-      questionObject.answerOptions.forEach(q => {
+      questionObject.answerOptions.forEach(o => {
         let key = ao[0] ? ao[ao.length - 1].key + 1 : 0;
-        ao.push(<AnswerOptionsInput questionObject={q} {...{ key }} />);
+        ao.push(<AnswerOptionsInput answerOption={o} {...{ key }} />);
       });
       setAnswerOptions(ao);
     }
@@ -38,12 +38,10 @@ useEffect(() => {
     if (imageFile) {
       let imageUrl = URL.createObjectURL(imageFile);
       setImageSrc(imageUrl);
+      setImageUpdated(true)
     }
   }, [imageFile]);
 
-  useEffect(() => {
-    if (imageSrc)  setImageUpdated(true);
-  }, [imageSrc]);
 
 
 
@@ -51,15 +49,15 @@ useEffect(() => {
 //
   function getImage(){
     console.log('get Image question');
-    // Storage.get(questionObject.image.replace('public/',''))
-    //   .then(res => {
-    //     console.log("image res");
-    //     console.log(res);
-    //     setImageSrc(res);
-    //   })
-    //   .catch(err => {
-    //     console.log(err);
-    //   });
+    Storage.get(questionObject.image.replace('public/',''))
+      .then(res => {
+        console.log("image res");
+        console.log(res);
+        setImageSrc(res);
+      })
+      .catch(err => {
+        console.log(err);
+      });
   }
 
   return (
@@ -98,11 +96,14 @@ useEffect(() => {
       image: imageFile ? true : false
     };
     // adds pathName to questionVAlues if there is one
-    if (questionObject) questionValues.pathName = question.pathName;
+    console.log('imageUpdated');
+    console.log(imageUpdated);
 
-    if (questionObject && question.image && !imageUpdated)
-      questionValues.image = question.image;
-
+    if (questionObject) questionValues.pathName = questionObject.pathName;
+    if (questionObject && questionObject.image && !imageUpdated)
+      questionValues.image = questionObject.image;
+      console.log('questionValues');
+      console.log(questionValues);
       // pushes all answerOptions into the questionValues.answerOptions
     [...answerOptionsRef.current.querySelectorAll(".question")].forEach(questionElement => {
       questionValues.answerOptions.push(questionElement.value);
@@ -148,79 +149,45 @@ useEffect(() => {
 
     function updateQuestion(q){
       console.log('updateQuestion');
+      API.put(
+        "StuddieBuddie",
+        `/subjects/${subjectName}/${categoryName}/questions/`,
+        {
+          body: JSON.stringify(q)
+        }
+      )
+        .then(response => {
+          console.log("update note response");
+          console.log(response);
+          if(imageFile && imageUpdated){
+            console.log('image');
+            Storage.put(
+              `${subjectName}/${categoryName}/QuestionImage/${user.user.username}/${q.pathName}`,
+              imageFile
+            )
+              .then(res => {
+                console.log("storage PUT  complete RES");
+                console.log(res);
+                setTimeout(function() {
+                  getCategoryQuestions();
+                }, 1500);
+              })
+              .catch(err => {
+                console.log("err");
+                console.log(err);
+              });
+          }
+           if (!imageFile){
+            getCategoryQuestions();
+          }
+        })
+        .catch(error => {
+          console.log(error.response);
+        });
     }
 //
-//   function updateNote(n) {
-//     API.put(
-//       "StuddieBuddie",
-//       `/subjects/${subjectName}/${categoryName}/notes/${n.pathName}`,
-//       {
-//         body: JSON.stringify(n)
-//       }
-//     )
-//       .then(response => {
-//         console.log("update note response");
-//         console.log(response);
-//         // getCategoryNotes();
-//         // if (audioBlob) {
-//           if (audioBlob && audioNoteUpdated) {
-//             Storage.put(
-//               `${subjectName}/${categoryName}/AudioNotes/${user.user.username}/${n.pathName}`,
-//               audioBlob
-//             )
-//               .then(res => {
-//                 console.log("audio  complete RES");
-//                 console.log(res);
-//                 setTimeout(function() {
-//                   getCategoryNotes();
-//                 }, 1500);
-//               })
-//               .catch(err => {
-//                 console.log("err");
-//                 console.log(err);
-//               });
-//           }
-//           // else if (!audioBlob && audioNoteUpdated && note.audioNote) {
-//           //   console.log("audio");
-//           //   Storage.remove(
-//           //     `${subjectName}/${categoryName}/AudioNotes/${user.user.username}/${n.pathName}`
-//           //   )
-//           //     .then(res => {
-//           //       console.log("storage del  complete RES");
-//           //       console.log(res);
-//           //       getCategoryNotes();
-//           //     })
-//           //     .catch(err => {
-//           //       console.log("err");
-//           //       console.log(err);
-//           //     });
-//           // }
-//         // }
-//         if(imageFile && imageUpdated){
-//           console.log('image');
-//           Storage.put(
-//             `${subjectName}/${categoryName}/Image/${user.user.username}/${n.pathName}`,
-//             imageFile
-//           )
-//             .then(res => {
-//               console.log("storage PUT  complete RES");
-//               console.log(res);
-//               setTimeout(function() {
-//                 getCategoryNotes();
-//               }, 1500);
-//             })
-//             .catch(err => {
-//               console.log("err");
-//               console.log(err);
-//             });
-//         }
-//          if (!imageFile && !audioBlob){
-//           getCategoryNotes();
-//         }
-//       })
-//       .catch(error => {
-//         console.log(error.response);
-//       });
+//   function updateNote(q) {
+
 //   }
 //
 
@@ -233,10 +200,10 @@ useEffect(() => {
 } // End of component
 
 function AnswerOptionsInput(props) {
-  let { question } = props;
+  let { answerOption } = props;
   return (
     <div>
-      <textarea className="question" defaultValue={question ? question : ""} />
+      <textarea className="question" defaultValue={answerOption ? answerOption : ""} />
     </div>
   );
 }
