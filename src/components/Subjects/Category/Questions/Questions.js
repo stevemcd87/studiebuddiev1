@@ -2,6 +2,10 @@ import React, { useState, useEffect, useContext } from "react";
 import CategoryContext from "../../../../contexts/CategoryContext";
 import Question from "./Question";
 import QuestionForm from "./QuestionForm";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faPlusCircle
+} from "@fortawesome/free-solid-svg-icons";
 
 import "./Questions.css";
 
@@ -25,7 +29,7 @@ useEffect(()=>{
           type="button "
           onClick={() => setDisplayForm(!displayForm)}
         >
-          Create Question
+          Create Question<FontAwesomeIcon icon={faPlusCircle} size="2x" title="Create Question"/>
         </button>
       )}
 

@@ -1,0 +1,93 @@
+button:disabled {
+  color: inherit;
+}
+
+.question-component .correct {
+  background-color: green;
+}
+
+.question-component .incorrect {
+  background-color: red;
+}
+
+.question-component .correct-option {
+  background-color: yellow;
+}
+
+.question-component {
+  width: 100vw;
+  height: 75vh;
+
+}
+
+.question-component .desktop {
+  display: none;
+}
+
+.question-content {
+  position: relative;
+  margin: auto;
+  width: 80%;
+  height: 80%;
+  background-color: lightgreen;
+  padding: .5em;
+}
+
+.question-content img {
+  margin: 0 auto;
+  width: 50%;
+  height: 40%;
+}
+
+/* .question-request-buttons {
+display: absolute;
+justify-content: space-around;
+padding: 1em;
+} */
+.edit-question-button {
+  position: absolute;
+  top:10px;
+  left:10px;
+}
+
+.delete-question-button {
+  position: absolute;
+  top:10px;
+  right:10px;
+}
+
+.question-detail {
+  min-height: 80%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-self: center;
+
+}
+
+.answer-options {
+  display: flex;
+  flex-wrap: wrap;
+  width: 85%;
+  justify-content: space-around;
+  margin: 0 auto;
+}
+
+.answer-option {
+  background-color: lightyellow;
+  padding: 1em;
+  width: 30%;
+  border-radius: 20px;
+
+}
+
+
+
+
+
+
+@media screen and (min-width: 800px) {
+  .question-component .desktop {
+    display: block;
+  }
+}
