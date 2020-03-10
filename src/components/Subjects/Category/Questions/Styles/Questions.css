@@ -2,6 +2,11 @@ button:disabled {
   color: inherit;
 }
 
+.questions {
+  display: flex;
+  overflow: hidden;
+}
+
 .question-component .correct {
   background-color: green;
 }
@@ -15,9 +20,10 @@ button:disabled {
 }
 
 .question-component {
+  box-sizing: border-box;
   width: 100vw;
-  height: 75vh;
-
+  /* height: 75vh; */
+  position: relative;
 }
 
 .question-component .desktop {
@@ -25,13 +31,16 @@ button:disabled {
 }
 
 .question-content {
+  box-sizing: border-box;
   position: relative;
-  margin: auto;
-  width: 80%;
-  height: 80%;
+  margin: 5vw;
+  width: 90vw;
+  min-height: 50vh;
   background-color: lightgreen;
   padding: .5em;
 }
+
+
 
 .question-content img {
   margin: 0 auto;

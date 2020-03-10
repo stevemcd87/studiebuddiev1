@@ -12,7 +12,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 export default function Question(props) {
-  let { question, nextQuestion } = props,
+  let { question, nextQuestion, incrementAnsweredCorrectly , last} = props,
     { subjectName, categoryName } = useParams(),
     answerOptionsDiv = useRef(),
     [imageSrc, setImageSrc] = useState(),
@@ -26,8 +26,10 @@ export default function Question(props) {
     setDisplayForm(false);
   }, [categoryQuestions]);
 
+  // checks if answer is correct or not
   useEffect(() => {
     let isCorrect = selectedAnswer === question.answer ? true : false;
+    if (isCorrect) incrementAnsweredCorrectly()
     if (selectedAnswer)
       [...answerOptionsDiv.current.children].forEach(v => {
         v.disabled = true;
@@ -48,6 +50,8 @@ export default function Question(props) {
 
   return (
     <div className="question-component">
+      <button onClick={()=>nextQuestion('prev')}>Prev</button>
+      <button onClick={()=>nextQuestion('next')}>{!last ? "Next" : "Test Results"}</button>
       {displayForm && <QuestionForm questionObject={question} />}
       {!displayForm && (
         <div className="question-content">
