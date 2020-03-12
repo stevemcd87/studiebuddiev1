@@ -5,7 +5,7 @@ import ApiContext from "../../../contexts/ApiContext";
 import SubjectContext from "../../../contexts/SubjectContext";
 
 function Subjects(props) {
-  let { API } = useContext(ApiContext),
+  let { API, user } = useContext(ApiContext),
     [subjects, setSubjects] = useState([]),
     [showForm, setShowForm] = useState(false);
 
@@ -29,9 +29,9 @@ function Subjects(props) {
           </SubjectContext.Provider>
         );
       })}
-      <button type="button" onClick={() => setShowForm(!showForm)}>
+      {user && <button type="button" onClick={() => setShowForm(!showForm)}>
         {showForm ? "Hide Form" : "Create Subject"}
-      </button>
+      </button>}
       {showForm && (
         <SubjectContext.Provider value={{ getSubjects }}>
           <SubjectForm />

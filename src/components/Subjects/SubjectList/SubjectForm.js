@@ -10,6 +10,17 @@ function SubjectForm(props) {
     descValue = subject ? subject.subjectDesc : "",
     [name, setName] = useState(nameValue),
     [desc, setDesc] = useState(descValue);
+  useEffect(() => {
+    console.log('user');
+    console.log(user);
+    if (user) {
+      user.currentSession().then(v => {
+        console.log('currentSession');
+        console.log(v);
+      });
+    }
+
+  }, []);
   return (
     <div>
       <h3>Create Subject</h3>
@@ -20,7 +31,7 @@ function SubjectForm(props) {
             type="text"
             onChange={e => setName(e.target.value)}
             value={name}
-            disabled={true}
+            disabled={nameValue ? true : false}
           />
         </label>
         <label>
@@ -37,19 +48,27 @@ function SubjectForm(props) {
       </form>
     </div>
   );
-  function submitForm() {
-    API.post("StuddieBuddie", "/subjects", {
+  async function submitForm() {
+
+    return await API.post("StuddieBuddie", "/subjects", {
       body: JSON.stringify({
         subjectName: name.trim(),
         subjectDesc: desc.trim(),
         username: user.user.username
-      })
+      }),
+      headers: {
+        Authorization: `Bearer ${(await user.currentSession())
+          .getIdToken()
+          .getJwtToken()}`
+      },
+      response: true
     })
       .then(response => {
         console.log(response);
         getSubjects();
       })
       .catch(error => {
+        console.log(error);
         console.log(error.response);
       });
   }

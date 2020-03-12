@@ -4,29 +4,29 @@ import AmpConfig from "./Amplify/AmpConfig";
 import SubjectMain from "./components/Subjects/SubjectMain";
 import ApiContext from "./contexts/ApiContext";
 import Amplify, { Auth, API, Storage } from "aws-amplify";
-import { Authenticator} from "aws-amplify-react";
+import { Authenticator } from "aws-amplify-react";
 // import awsconfig from "./aws-exports";
 // Amplify.configure(awsconfig);
 // , ChatBot, AmplifyTheme
 Amplify.configure(AmpConfig);
 // Storage.configure({ level: "public" });
 function App() {
-  let [user, setUser] = useState(Auth);
+  let [user, setUser] = useState(Auth.user),
+    [authState, setAuthState] = useState();
   // let userInput = "book a car";
 
   useEffect(() => {
-    setUser(Auth);
-  }, [user]);
+    // console.log();
+    setUser(Auth.user);
+  }, [authState]);
 
   useEffect(() => {
     console.log(user);
   }, [user]);
 
-
-
   return (
     <div className="App">
-      <Authenticator>
+      <Authenticator onStateChange={as => setAuthState(as)}>
         <ApiContext.Provider value={{ API, Storage, user }}>
           <SubjectMain />
         </ApiContext.Provider>

@@ -34,7 +34,7 @@ export default function QuestionForm(props) {
     if (questionObject && questionObject.image) getImage();
   }, []);
 
-  // set question type to trueFalse
+  // set question type to trueFalse(default)
   useEffect(() => {
     setQuestionType('trueFalse')
   }, []);
