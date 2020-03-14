@@ -18,20 +18,28 @@ function Subjects(props) {
     setShowForm(false);
   }, [subjects]);
   return (
-    <div>
-      {subjects.map(s => {
-        return (
-          <SubjectContext.Provider
-            key={s.pathName}
-            value={{ subject: s, getSubjects }}
-          >
-            <Subject />
-          </SubjectContext.Provider>
-        );
-      })}
-      {user && <button type="button" onClick={() => setShowForm(!showForm)}>
-        {showForm ? "Hide Form" : "Create Subject"}
-      </button>}
+    <div className="subjects-component">
+      <div className="subjects">
+        {subjects.map(s => {
+          return (
+            <SubjectContext.Provider
+              key={s.pathName}
+              value={{ subject: s, getSubjects }}
+            >
+              <Subject />
+            </SubjectContext.Provider>
+          );
+        })}
+      </div>
+      {user && (
+        <button
+          type="button"
+          className="create-button"
+          onClick={() => setShowForm(!showForm)}
+        >
+          {showForm ? "Hide Form" : "Create Subject"}
+        </button>
+      )}
       {showForm && (
         <SubjectContext.Provider value={{ getSubjects }}>
           <SubjectForm />
@@ -40,9 +48,9 @@ function Subjects(props) {
     </div>
   );
 
-  function getSubjects() {
+  async function getSubjects() {
     console.log("GET subjects");
-    API.get("StuddieBuddie", "/subjects", { response: true })
+    return await API.get("StuddieBuddie", "/subjects", { response: true })
       .then(response => {
         console.log("res");
         console.log(response);

@@ -3,7 +3,7 @@ import ApiContext from "../../../contexts/ApiContext";
 import SubjectContext from "../../../contexts/SubjectContext";
 
 function SubjectForm(props) {
-  let { API, user } = useContext(ApiContext),
+  let { API, user, Auth } = useContext(ApiContext),
     { getSubjects } = useContext(SubjectContext),
     { subject } = props,
     nameValue = subject ? subject.navName : "",
@@ -11,37 +11,30 @@ function SubjectForm(props) {
     [name, setName] = useState(nameValue),
     [desc, setDesc] = useState(descValue);
   useEffect(() => {
-    console.log('user');
-    console.log(user);
     if (user) {
-      user.currentSession().then(v => {
-        console.log('currentSession');
+      Auth.currentSession().then(v => {
+        console.log("currentSession");
         console.log(v);
       });
     }
-
   }, []);
   return (
-    <div>
-      <h3>Create Subject</h3>
+    <div className="subject-form-component form-component">
+      <h3>Create Subject to Study</h3>
       <form id="subject-form">
-        <label>
-          Name
-          <input
-            type="text"
-            onChange={e => setName(e.target.value)}
-            value={name}
-            disabled={nameValue ? true : false}
-          />
-        </label>
-        <label>
-          Description
-          <input
-            type="text"
-            onChange={e => setDesc(e.target.value)}
-            defaultValue={desc}
-          />
-        </label>
+        <textarea
+          type="text"
+          onChange={e => setName(e.target.value)}
+          value={name}
+          disabled={nameValue ? true : false}
+          placeholder="Subject's Name or Book Title"
+        />
+        <textarea
+          type="text"
+          onChange={e => setDesc(e.target.value)}
+          defaultValue={desc}
+          placeholder="Brief Description"
+        />
         <button type="button" onClick={!subject ? submitForm : updateForm}>
           {!subject ? "submitForm" : "updateForm"}
         </button>
@@ -49,15 +42,14 @@ function SubjectForm(props) {
     </div>
   );
   async function submitForm() {
-
     return await API.post("StuddieBuddie", "/subjects", {
       body: JSON.stringify({
         subjectName: name.trim(),
         subjectDesc: desc.trim(),
-        username: user.user.username
+        username: user.username
       }),
       headers: {
-        Authorization: `Bearer ${(await user.currentSession())
+        Authorization: `Bearer ${(await Auth.currentSession())
           .getIdToken()
           .getJwtToken()}`
       },
@@ -76,7 +68,7 @@ function SubjectForm(props) {
   function updateForm() {
     API.put("StuddieBuddie", "/subjects", {
       body: JSON.stringify({
-        username: user.user.username,
+        username: user.username,
         pathName: subject.pathName,
         subjectDesc: desc
       })

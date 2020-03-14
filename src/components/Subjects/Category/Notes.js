@@ -19,31 +19,34 @@ function Notes(props) {
   // }, [categoryNotes]);
   return (
     <div className="notes-component">
-      <button type="button" onClick={() => setAutoPlay(!autoPlay)}>
-        {autoPlay ? "Stop AutoPlay" : "Auto Play Notes"}
-      </button>
+      <div className="notes-component-buttons">
+        <button
+          className="create-button"
+          type="button"
+          onClick={() => setDisplayNoteForm(!displayNoteForm)}
+        >
+          {!displayNoteForm ? "Create Note" : "Hide Form"}
+        </button>
+        <button className="create-button" type="button" onClick={() => setAutoPlay(!autoPlay)}>
+          {autoPlay ? "Stop AutoPlay" : "Auto Play Notes"}
+        </button>
+      </div>
+
+
+
+
+      {displayNoteForm && <NoteForm />}
       <div className="notes">
-        {!displayNoteForm && (
-          <button
-            type="button "
-            onClick={() => setDisplayNoteForm(!displayNoteForm)}
-          >
-            Create Note
-          </button>
-        )}
-        {displayNoteForm && <NoteForm />}
-        <div className="notes">
-          {categoryNotes.map((note, ind) => {
-            return (
-              <Note
-                key={note.pathName}
-                note={note}
-                active={autoPlayIndex === ind ? true : false}
-                nextAutoPlayIndex={nextAutoPlayIndex}
-              />
-            );
-          })}
-        </div>
+        {categoryNotes.map((note, ind) => {
+          return (
+            <Note
+              key={note.pathName}
+              note={note}
+              active={autoPlayIndex === ind ? true : false}
+              nextAutoPlayIndex={nextAutoPlayIndex}
+            />
+          );
+        })}
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ import Notes from "./Notes";
 import CategoryContext from "../../../contexts/CategoryContext";
 import ApiContext from "../../../contexts/ApiContext";
 import Questions from "./Questions/Questions";
+import "./Category.css";
 
 import {
   BrowserRouter as Router,
@@ -15,7 +16,7 @@ import {
 
 export default function Category() {
   let { path, url } = useRouteMatch(),
-    { subjectName, categoryName } = useParams(),
+    { username, subjectName, categoryName } = useParams(),
     [categoryNotes, setCategoryNotes] = useState([]),
     [categoryQuestions, setCategoryQuestions] = useState([]),
     { API, user } = useContext(ApiContext);
@@ -24,15 +25,15 @@ export default function Category() {
     getCategoryQuestions();
   }, []);
 
-
-
-
   return (
     <div>
-      <h2>{categoryName.replace("-", " ")}</h2>
-      <ul>
+      <button type="button" className="back-button">
+        <Link to={`/subjects/${username}/${subjectName}/`}>Back</Link>
+      </button>
+      <h2>{categoryName.replace(/-/g, " ")}</h2>
+      <ul className="category-nav">
         <li>
-          <Link to={`${url}`}>Review Notes</Link>
+          <Link to={`${url}/notes`}>Review Notes</Link>
         </li>
         <li>
           <Link to={`${url}/test`}>Test</Link>
@@ -43,10 +44,16 @@ export default function Category() {
           <CategoryContext.Provider value={{ categoryNotes, getCategoryNotes }}>
             <Notes />
           </CategoryContext.Provider>
-
+        </Route>
+        <Route path={`${path}/notes`}>
+          <CategoryContext.Provider value={{ categoryNotes, getCategoryNotes }}>
+            <Notes />
+          </CategoryContext.Provider>
         </Route>
         <Route path={`${path}/test`}>
-          <CategoryContext.Provider value={{ categoryQuestions,getCategoryQuestions }}>
+          <CategoryContext.Provider
+            value={{ categoryQuestions, getCategoryQuestions }}
+          >
             <Questions />
           </CategoryContext.Provider>
         </Route>
@@ -58,7 +65,7 @@ export default function Category() {
     console.log("GET Subjectcategory");
     API.get("StuddieBuddie", `/subjects/${subjectName}/${categoryName}`, {
       queryStringParameters: {
-        username: user.user.username
+        username: username
       }
     })
       .then(response => {
@@ -73,11 +80,15 @@ export default function Category() {
 
   function getCategoryQuestions() {
     console.log("GET getCategoryQuestions");
-    API.get("StuddieBuddie", `/subjects/${subjectName}/${categoryName}/questions`, {
-      queryStringParameters: {
-        username: user.user.username
+    API.get(
+      "StuddieBuddie",
+      `/subjects/${subjectName}/${categoryName}/questions`,
+      {
+        queryStringParameters: {
+          username: username
+        }
       }
-    })
+    )
       .then(response => {
         console.log("GET Category question response");
         console.log(response);
@@ -85,7 +96,6 @@ export default function Category() {
       })
       .catch(error => {
         console.error(error);
-      })
-
+      });
   }
 } // end of component

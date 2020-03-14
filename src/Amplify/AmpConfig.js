@@ -1,3 +1,5 @@
+import Amplify, { Auth } from "aws-amplify";
+
 const AmpConfig = {
   Interactions: {
     bots: {
@@ -70,7 +72,12 @@ const AmpConfig = {
     endpoints: [
       {
         name: "StuddieBuddie",
-        endpoint: "https://1dciz8ln4i.execute-api.us-east-1.amazonaws.com/dev"
+        endpoint: "https://1dciz8ln4i.execute-api.us-east-1.amazonaws.com/dev",
+        // custom_header: async () => {
+        //   // return { Authorization: "token" };
+        //   // Alternatively, with Cognito User Pools use this:
+        //   return { Authorization: `Bearer ${(await Auth.currentSession()).getAccessToken().getJwtToken()}` }
+        // }
       }
     ]
   }

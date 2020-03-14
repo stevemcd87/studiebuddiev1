@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import AudioNote from "./AudioNote";
 import { useParams } from "react-router-dom";
-import "./NoteForm.css";
 import ApiContext from "../../../contexts/ApiContext";
 import CategoryContext from "../../../contexts/CategoryContext";
 

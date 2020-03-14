@@ -1,5 +1,59 @@
 html {
   text-align: center;
-  /* max-height: 100vh;
-  box-sizing: border-box; */
+  min-height: 100vh;
 }
+
+header{
+  height: 5vh;
+}
+
+h2,h3,h4 {
+    width: 80%;
+    margin: 0 auto;
+    padding: .5em;
+}
+
+h2 {
+  font-size: 2.5em;
+
+}
+
+h3 {
+  font-size: 1.8em;
+  font-weight: normal;
+
+}
+
+h4 {
+  font-size: 1.3em;
+  font-weight: normal;
+}
+
+
+label {
+  display: flex;
+  flex-direction: column;
+}
+
+button {
+  border: 0;
+  cursor: pointer
+}
+
+.create-button {
+  font-size: 1.2em;
+  padding: .5em;
+  border-radius: 10px;
+}
+
+.back-button {
+  padding: 1em;
+  font-size: 1.2em;
+  border-radius: 50%;
+  color: #FF9900;
+}
+
+
+/* :root {
+  --main-bg-color: lightgreen;
+} */

@@ -4,10 +4,12 @@ import ApiContext from "../../../contexts/ApiContext";
 import SubjectContext from "../../../contexts/SubjectContext";
 import CategoryForm from "./CategoryForm";
 import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit } from "@fortawesome/free-solid-svg-icons";
 
 function SubjectDetail() {
-  let { subjectName } = useParams(),
-    { API, user } = useContext(ApiContext),
+  let { subjectName, username } = useParams(),
+    { API, user, Auth } = useContext(ApiContext),
     [subject, setSubject] = useState({}),
     [categories, setCategories] = useState([]),
     [displayCategoryForm, setDisplayCategoryForm] = useState(false);
@@ -22,43 +24,57 @@ function SubjectDetail() {
   }, [subject]);
   return (
     <div className="subject-detail-component">
+      <button className="back-button">
+        <Link to={`/`}>Back</Link>
+      </button>
+
       <div className="subject-detail">
-        <p>Creator: {subject.username}</p>
-        <p>{subject.navName}</p>
-        <p>{subject.subjectDesc}</p>
+        <h2>{subject.navName}</h2>
+        <h3>{subject.subjectDesc}</h3>
       </div>
-      <div>
+      <div className="categories">
         {categories.map(category => {
           return (
             <div key={category.pathName} className="category">
-              <p>
-                <Link to={`/subjects/${subject.pathName}/${category.urlName}`}>
+              <h4>
+                <Link
+                  to={`/subjects/${subject.username}/${subject.pathName}/${category.urlName}`}
+                >
                   {category.name}
                 </Link>
-                - {category.desc}
+              </h4>
+              <p>{category.desc}<span></span></p>
+              {checkUsername() && (
                 <button type="button" onClick={() => deleteCategory(category)}>
                   Delete
                 </button>
-              </p>
+              )}
             </div>
           );
         })}
       </div>
-      <button
-        type="button"
-        onClick={() => setDisplayCategoryForm(!displayCategoryForm)}
-      >
-        Create Category
-      </button>
+      {checkUsername() && (
+        <button
+          className="create-button"
+          type="button"
+          onClick={() => setDisplayCategoryForm(!displayCategoryForm)}
+        >
+          {!displayCategoryForm ? "Create Category" : "Hide Form"}
+        </button>
+      )}
       {displayCategoryForm && <CategoryForm {...{ subject, getSubject }} />}
     </div>
   );
+
+  function checkUsername() {
+    return user && user.username === subject.username ? true : false;
+  }
 
   function deleteCategory(c) {
     console.log("deleteCategory");
     API.del("StuddieBuddie", `/subjects/${subject.pathName}`, {
       body: JSON.stringify({
-        username: user.user.username,
+        username: username,
         pathName: c.pathName
       })
     })
@@ -76,7 +92,7 @@ function SubjectDetail() {
     console.log("GET subject");
     API.get("StuddieBuddie", `/subjects/${subjectName}`, {
       queryStringParameters: {
-        username: user.user.username
+        username: username
       }
     })
       .then(response => {
@@ -86,7 +102,7 @@ function SubjectDetail() {
         let c = response.slice(1).map(v => {
           let urlName = v.pathName.split("#")[1].split("_")[1];
           return {
-            name: urlName.replace("-", " "),
+            name: urlName.replace(/-/g, " "),
             desc: v.categoryDesc,
             pathName: v.pathName,
             urlName: urlName

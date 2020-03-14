@@ -7,28 +7,31 @@ export default function CategoryForm(props) {
     [categoryName, setCategoryName] = useState(""),
     [categoryDesc, setCategoryDesc] = useState("");
   return (
-    <form>
-      <input
+    <div className="category-form-component form-component">
+    <form className="category-form ">
+      <textarea
         type="text"
         onChange={e => setCategoryName(e.target.value)}
         defaultValue={categoryName}
+        placeholder="Category Name"
       />
-      <input
-        type="text"
+    <textarea
         onChange={e => setCategoryDesc(e.target.value)}
         defaultValue={categoryDesc}
+        placeholder="Category Description"
       />
       <button type="button" onClick={postCategory}>
-        Create
+        Create Category
       </button>
     </form>
+  </div>
   );
   function postCategory() {
     API.post("StuddieBuddie", `/subjects/${subject.pathName}`, {
       body: JSON.stringify({
         categoryName: categoryName.trim(),
         categoryDesc: categoryDesc.trim(),
-        username: user.user.username
+        username: user.username
         // pathName: subject.pathName
       })
     })

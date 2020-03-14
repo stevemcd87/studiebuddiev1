@@ -5,29 +5,37 @@ import SubjectMain from "./components/Subjects/SubjectMain";
 import ApiContext from "./contexts/ApiContext";
 import Amplify, { Auth, API, Storage } from "aws-amplify";
 import { Authenticator } from "aws-amplify-react";
-// import awsconfig from "./aws-exports";
-// Amplify.configure(awsconfig);
-// , ChatBot, AmplifyTheme
 Amplify.configure(AmpConfig);
 // Storage.configure({ level: "public" });
 function App() {
   let [user, setUser] = useState(Auth.user),
-    [authState, setAuthState] = useState();
-  // let userInput = "book a car";
-
+    [authState, setAuthState] = useState(),
+    [hideDefault, setHideDefault] = useState(true);
   useEffect(() => {
-    // console.log();
+    console.log("authstate");
+    console.log(authState);
     setUser(Auth.user);
+    let hd = authState === "signedIn" ? false : true;
+    setHideDefault(hd);
   }, [authState]);
 
   useEffect(() => {
     console.log(user);
   }, [user]);
 
+
   return (
     <div className="App">
-      <Authenticator onStateChange={as => setAuthState(as)}>
-        <ApiContext.Provider value={{ API, Storage, user }}>
+    {(authState === "signIn") &&   <header>
+        <button onClick={() => setHideDefault(!hideDefault)}>
+          {hideDefault ? "Sign In" : "Don't Sign In"}
+        </button>
+      </header>}
+      <Authenticator
+        onStateChange={as => setAuthState(as)}
+        hideDefault={hideDefault}
+      >
+        <ApiContext.Provider value={{ API, Storage, user, Auth }}>
           <SubjectMain />
         </ApiContext.Provider>
       </Authenticator>
