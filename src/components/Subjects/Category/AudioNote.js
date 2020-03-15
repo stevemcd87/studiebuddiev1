@@ -8,7 +8,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import ApiContext from "../../../contexts/ApiContext";
 export default function AudioNote(props) {
-  let {audioBlob, setAudioBlob, setAudioNoteUpdated, note } = props,
+  let { audioBlob, setAudioBlob, setAudioNoteUpdated, note } = props,
     [mediaRecorder, setMediaRecorder] = useState(),
     // [audioBlob, setAudioBlob] = useState(),
     [audio, setAudio] = useState(),
@@ -54,16 +54,16 @@ export default function AudioNote(props) {
 
   return (
     <div className="audio-note-component">
-      <h3>Audio Note</h3>
-        {note && note.audioNote && (
-          <button onClick={() => playAudio(note.audioNote)}>
-            Play Audio Note
-          </button>
-        )}
-      <button disabled={recording} onClick={startRecord}>
+      {note && note.audioNote && (
+        <button onClick={() => playAudio(note.audioNote)}>
+          Play Audio Note
+        </button>
+      )}
+      <button type="button" disabled={recording} onClick={startRecord}>
         <FontAwesomeIcon icon={faRecordVinyl} />
       </button>
       <button
+        type="button"
         disabled={!recording}
         onClick={() => {
           mediaRecorder.stop();
@@ -74,6 +74,7 @@ export default function AudioNote(props) {
       </button>
 
       <button
+        type="button"
         className="play-audio-button"
         onClick={playNewAudio}
         disabled={!audio}
@@ -81,6 +82,7 @@ export default function AudioNote(props) {
         <FontAwesomeIcon icon={faPlay} />
       </button>
       <button
+        type="button"
         className="delete-audio-button"
         onClick={() => setAudioBlob(null)}
         disabled={!audio}
@@ -93,7 +95,7 @@ export default function AudioNote(props) {
   function playAudio(s3Key) {
     // audio.play();
     console.log(s3Key);
-    Storage.get(s3Key.replace('public/',''))
+    Storage.get(s3Key.replace("public/", ""))
       .then(res => {
         console.log("play audio res");
         console.log(typeof res);
@@ -111,6 +113,7 @@ export default function AudioNote(props) {
   }
 
   function playNewAudio() {
+    console.log("playnew audio");
     audio.play();
   }
 } // end of component

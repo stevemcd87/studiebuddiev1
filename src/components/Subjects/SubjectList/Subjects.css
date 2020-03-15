@@ -45,7 +45,8 @@
 }
 
 .subject-form-component form textarea,
-.category-form-component form textarea
+.category-form-component form textarea,
+.form-textarea
 {
   width: 75%;
   height: 100px;

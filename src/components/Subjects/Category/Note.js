@@ -49,11 +49,12 @@ function Note(props) {
 
   function playAudio() {
     if (note && note.audioNote) {
-      Storage.get(note.audioNote.replace("public/", ""))
+      Storage.get(`${note.audioNote}`)
         .then(res => {
           console.log("play audio res");
+          console.log(res);
           let a = new Audio(res);
-          console.log(a);
+          console.log(`public/${note.audioNote}`);
           a.play();
           a.addEventListener("ended", function() {
             if (active) {
@@ -113,7 +114,7 @@ function Note(props) {
       `/subjects/${subjectName}/${categoryName}/notes/${n.pathName}`,
       {
         body: JSON.stringify({
-          username: user.user.username,
+          username: user.username,
           pathName: n.pathName
         })
       }
