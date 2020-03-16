@@ -85,8 +85,8 @@ function NoteForm(props) {
           placeholder="Title of Note or Note"
         />
         <div className="sub-note-array" ref={noteArray}>
-          {subnotes.map(sn => (
-            <Subnote subnote={sn} />
+          {subnotes.map((sn,ind) => (
+            <Subnote subnote={sn} {...{removeSubnote, ind}} />
           ))}
         </div>
         <button type="button" onClick={addSubnote}>
@@ -214,9 +214,15 @@ function NoteForm(props) {
     sn.push("");
     setSubnotes(sn);
   }
+
+  function removeSubnote(ind) {
+    let sn = subnotes.slice();
+    sn.splice(ind, 1);
+    setSubnotes(sn);
+  }
 } // End of component
 function Subnote(props) {
-  let { subnote } = props;
+  let { subnote, ind, removeSubnote } = props;
   return (
     <div className="subnote">
       <span className="subnote-dash">-</span>
@@ -225,6 +231,10 @@ function Subnote(props) {
         placeholder="Subnote"
         defaultValue={subnote ? subnote : ""}
       />
+    <button type="button" onClick={()=> removeSubnote(ind)} >
+      <FontAwesomeIcon icon={faTrash} />
+    </button>
+
     </div>
   );
 }
