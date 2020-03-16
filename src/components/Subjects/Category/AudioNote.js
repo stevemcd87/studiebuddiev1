@@ -11,9 +11,25 @@ export default function AudioNote(props) {
   let { audioBlob, setAudioBlob, setAudioNoteUpdated, note } = props,
     [mediaRecorder, setMediaRecorder] = useState(),
     // [audioBlob, setAudioBlob] = useState(),
+    [audioNote, setAudioNote] = useState(),
     [audio, setAudio] = useState(),
     [recording, setRecording] = useState(false),
     { Storage } = useContext(ApiContext);
+
+  // useEffect(() => {
+  //   console.log(imageSrc);
+  //   if (note && note.audioNote) getAudioNote();
+  // }, []);
+  //
+  // function getAudioNote() {
+  //   Storage.get(note.audioNote.replace("public/", ""))
+  //     .then(res => {
+  //       setAudioNote(res);
+  //     })
+  //     .catch(err => {
+  //       console.log(err);
+  //     });
+  // }
   // for Audio Note componentDidMount
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
@@ -55,12 +71,24 @@ export default function AudioNote(props) {
   return (
     <div className="audio-note-component">
       {note && note.audioNote && (
-        <button onClick={() => playAudio(note.audioNote)}>
-          Play Audio Note
-        </button>
+        <div>
+          <button type="button" onClick={() => playAudio(note.audioNote)}>
+            Play Saved Audio Note
+          </button>
+        </div>
       )}
-      <button type="button" disabled={recording} onClick={startRecord}>
-        <FontAwesomeIcon icon={faRecordVinyl} />
+      <button
+        type="button"
+        disabled={recording}
+        onClick={() => {
+          return window.confirm(
+            "Recording will override your previous Audio Note, Are you sure you'd like to record?"
+          )
+            ? startRecord()
+            : false;
+        }}
+      >
+        <FontAwesomeIcon icon={faRecordVinyl} title="Start Recording" />
       </button>
       <button
         type="button"
@@ -70,7 +98,7 @@ export default function AudioNote(props) {
           setRecording(false);
         }}
       >
-        <FontAwesomeIcon icon={faStop} />
+        <FontAwesomeIcon icon={faStop} title="Stop Recording" />
       </button>
 
       <button
@@ -79,7 +107,7 @@ export default function AudioNote(props) {
         onClick={playNewAudio}
         disabled={!audio}
       >
-        <FontAwesomeIcon icon={faPlay} />
+        <FontAwesomeIcon icon={faPlay} title="Play Recording"/>
       </button>
       <button
         type="button"
@@ -87,7 +115,7 @@ export default function AudioNote(props) {
         onClick={() => setAudioBlob(null)}
         disabled={!audio}
       >
-        <FontAwesomeIcon icon={faTrash} />
+        <FontAwesomeIcon icon={faTrash} title="Delete Recording" />
       </button>
     </div>
   );

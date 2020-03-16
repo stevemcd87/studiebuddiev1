@@ -4,9 +4,9 @@ import { useParams } from "react-router-dom";
 import ApiContext from "../../../contexts/ApiContext";
 import CategoryContext from "../../../contexts/CategoryContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {  faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 function NoteForm(props) {
-  let { subjectName, categoryName, username } = useParams(),
+  let { subjectName, categoryName, username, setDisplayForm } = useParams(),
     { note } = props,
     imageInput = useRef(null),
     [imageSrc, setImageSrc] = useState(),
@@ -32,7 +32,8 @@ function NoteForm(props) {
 
   // for SubNotes if updating note
   useEffect(() => {
-    if (note && note.subnotes) {setSubnotes(note.subnotes);
+    if (note && note.subnotes) {
+      setSubnotes(note.subnotes);
     }
   }, []);
 
@@ -43,8 +44,6 @@ function NoteForm(props) {
       let imageUrl = URL.createObjectURL(imageFile);
       setImageUpdated(true);
       setImageSrc(imageUrl);
-      console.log("imageUrl");
-      console.log(imageUrl);
     }
   }, [imageFile]);
 
@@ -67,7 +66,7 @@ function NoteForm(props) {
 
   return (
     <div className="note-form-component">
-      <form>
+      <form className="note">
         <AudioNote
           {...{ note, audioBlob, setAudioBlob, setAudioNoteUpdated }}
         />
@@ -85,8 +84,10 @@ function NoteForm(props) {
           onChange={e => setMainNote(e.target.value)}
           placeholder="Title of Note or Note"
         />
-      <div className="sub-note-array" ref={noteArray}>
-          {subnotes.map(sn => <Subnote subnote={sn}/>)}
+        <div className="sub-note-array" ref={noteArray}>
+          {subnotes.map(sn => (
+            <Subnote subnote={sn} />
+          ))}
         </div>
         <button type="button" onClick={addSubnote}>
           Add Subnote
@@ -98,7 +99,7 @@ function NoteForm(props) {
     </div>
   );
 
-  function checkForUsername(){
+  function checkForUsername() {
     return user && user.username === username ? true : false;
   }
 
@@ -108,7 +109,7 @@ function NoteForm(props) {
       username: user.username,
       mainNote: mainNote ? mainNote.trim() : false,
       subnotes: [],
-      audioNote: audioBlob ? true: false,
+      audioNote: audioBlob ? true : false,
       image: imageFile ? true : false
     };
     if (note) noteValues.pathName = note.pathName;
@@ -119,9 +120,11 @@ function NoteForm(props) {
     // for subNotes
     console.log("noteValues");
     console.log(noteValues);
-    [...noteArray.current.querySelectorAll(".subnote")].forEach(noteElement => {
-      noteValues.subnotes.push(noteElement.value);
-    });
+    [...noteArray.current.querySelectorAll(".subnote-input")].forEach(
+      noteElement => {
+        noteValues.subnotes.push(noteElement.value);
+      }
+    );
     console.log(note);
     !note ? postNote(noteValues) : updateNote(noteValues);
   }
@@ -136,14 +139,9 @@ function NoteForm(props) {
     )
       .then(response => {
         if (audioBlob && audioNoteUpdated) {
-          Storage.put(
-            `${subjectName}/${categoryName}/AudioNotes/${user.username}/${n.pathName}`,
-            audioBlob
-          )
+          Storage.put(response.audioNote, audioBlob)
             .then(res => {
-              setTimeout(function() {
-                getCategoryNotes();
-              }, 1500);
+                if (!imageFile && !imageUpdated) getCategoryNotes();
             })
             .catch(err => {
               console.log("err");
@@ -151,14 +149,9 @@ function NoteForm(props) {
             });
         }
         if (imageFile && imageUpdated) {
-          Storage.put(
-            `${subjectName}/${categoryName}/Image/${user.username}/${n.pathName}`,
-            imageFile
-          )
+          Storage.put(response.image, imageFile)
             .then(res => {
-              setTimeout(function() {
-                getCategoryNotes();
-              }, 1500);
+              getCategoryNotes();
             })
             .catch(err => {
               console.log("err");
@@ -175,19 +168,18 @@ function NoteForm(props) {
   }
 
   function postNote(n) {
+    console.log("n");
+    console.log(n);
     API.post("StuddieBuddie", `/subjects/${subjectName}/${categoryName}`, {
       body: JSON.stringify(n)
     })
       .then(response => {
         if (audioBlob) {
-          Storage.put(
-            response.audioNote,
-            audioBlob
-          )
+          Storage.put(response.audioNote, audioBlob)
             .then(res => {
-              setTimeout(function() {
-                getCategoryNotes();
-              }, 1500);
+              // setTimeout(function() {
+              if (!imageFile) getCategoryNotes();
+              // }, 1500);
             })
             .catch(err => {
               console.log("err");
@@ -196,14 +188,9 @@ function NoteForm(props) {
         }
 
         if (imageFile) {
-          Storage.put(
-            response.image,
-            imageFile
-          )
+          Storage.put(response.image, imageFile)
             .then(res => {
-              setTimeout(function() {
-                getCategoryNotes();
-              }, 1500);
+              getCategoryNotes();
             })
             .catch(err => {
               console.log("err");
@@ -213,6 +200,7 @@ function NoteForm(props) {
 
         if (!imageFile && !audioBlob) {
           getCategoryNotes();
+          setDisplayForm(false);
         }
       })
       .catch(error => {
@@ -223,15 +211,20 @@ function NoteForm(props) {
 
   function addSubnote() {
     let sn = subnotes.slice();
-    sn.push('')
+    sn.push("");
     setSubnotes(sn);
   }
 } // End of component
 function Subnote(props) {
   let { subnote } = props;
   return (
-    <div>
-      <textarea className="subnote form-textarea" placeholder="Subnote" defaultValue={subnote ? subnote : ""} />
+    <div className="subnote">
+      <span className="subnote-dash">-</span>
+      <textarea
+        className="subnote-input"
+        placeholder="Subnote"
+        defaultValue={subnote ? subnote : ""}
+      />
     </div>
   );
 }
